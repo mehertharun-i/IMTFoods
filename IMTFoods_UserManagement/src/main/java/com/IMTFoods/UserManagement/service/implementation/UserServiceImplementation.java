@@ -70,8 +70,7 @@ public class UserServiceImplementation implements UserService{
 		UserInformation updatedUserInformation = userRepository.save(userInformation);
 		
 		UserInformationResponseDto userInformationResponseDto = UserInformationResponseDtoBuilder.buildUserInformationResponseDtoFromUserInformation(updatedUserInformation);
-		
-		
+				
 		return ResponseEntity.status(HttpStatus.OK).body(userInformationResponseDto);
 	}
 
@@ -95,68 +94,36 @@ public class UserServiceImplementation implements UserService{
 		if(updateUserInformationRequestDto.getUserLastNameReqeustDto() != null && updateUserInformationRequestDto.getUserLastNameReqeustDto() != userInformation.getUserLastName()) {
 			userInformation.setUserLastName(updateUserInformationRequestDto.getUserLastNameReqeustDto());
 		}
-		
-		if(updateUserInformationRequestDto.getUserDateOfBirthReqeustDto() != null && updateUserInformationRequestDto.getUserDateOfBirthReqeustDto() != userInformation.getUserDateOfBirth()) {
-			userInformation.setUserDateOfBirth(updateUserInformationRequestDto.getUserDateOfBirthReqeustDto());
-		}
-		
-		if(updateUserInformationRequestDto.getGenderReqeustDto() != null && updateUserInformationRequestDto.getGenderReqeustDto() != userInformation.getGender()) {
-			userInformation.setGender(updateUserInformationRequestDto.getGenderReqeustDto());
-		}
-		
 		if(updateUserInformationRequestDto.getUserPhoneNumberReqeustDto() != null && updateUserInformationRequestDto.getUserPhoneNumberReqeustDto() != userInformation.getUserPhoneNumber()) {
 			userInformation.setUserPhoneNumber(updateUserInformationRequestDto.getUserPhoneNumberReqeustDto());
 		}
+			userInformation.setUserDateOfBirth(updateUserInformationRequestDto.getUserDateOfBirthReqeustDto());
+			userInformation.setGender(updateUserInformationRequestDto.getGenderReqeustDto());
+		
+		int count = 0;
 		
 		List<UserAddressInformation> updateUserAddressInformationList = new ArrayList<>(); 
-		List<UserAddressInformationRequestDto> updateSingleUserAddressInformationDetails = updateUserInformationRequestDto.getUserAddressInformationReqeustDto();
-		List<UserAddressInformation> userAddressInformationDetails = userInformation.getUserAddressInformation();
-		
-		for(int index = 0; index < updateSingleUserAddressInformationDetails.size(); index++) {
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserHouseNumberRequestDto() != null && updateSingleUserAddressInformationDetails.get(index).getUserHouseNumberRequestDto() != userAddressInformationDetails.get(index).getUserHouseNumber()) {
-				userAddressInformationDetails.get(index).setUserHouseNumber(updateSingleUserAddressInformationDetails.get(index).getUserHouseNumberRequestDto());
-			}
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserLandMarkRequestDto() != null && updateSingleUserAddressInformationDetails.get(index).getUserLandMarkRequestDto() != userAddressInformationDetails.get(index).getUserLandMark()) {
-				userAddressInformationDetails.get(index).setUserLandMark(updateSingleUserAddressInformationDetails.get(index).getUserLandMarkRequestDto());
-			}
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserStreetRequestDto() != null && updateSingleUserAddressInformationDetails.get(index).getUserStreetRequestDto() != userAddressInformationDetails.get(index).getUserStreet()) {
-				userAddressInformationDetails.get(index).setUserStreet(updateSingleUserAddressInformationDetails.get(index).getUserStreetRequestDto());
-			}
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserDistrictRequestDto() != null && updateSingleUserAddressInformationDetails.get(index).getUserDistrictRequestDto() != userAddressInformationDetails.get(index).getUserDistrict()) {
-				userAddressInformationDetails.get(index).setUserDistrict(updateSingleUserAddressInformationDetails.get(index).getUserDistrictRequestDto());
-			}
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserStateRequestDto() != null && updateSingleUserAddressInformationDetails.get(index).getUserStateRequestDto() != userAddressInformationDetails.get(index).getUserState()) {
-				userAddressInformationDetails.get(index).setUserState(updateSingleUserAddressInformationDetails.get(index).getUserStateRequestDto());
-			}
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserCountryRequestDto() != null && updateSingleUserAddressInformationDetails.get(index).getUserCountryRequestDto() != userAddressInformationDetails.get(index).getUserCountry()) {
-				userAddressInformationDetails.get(index).setUserCountry(updateSingleUserAddressInformationDetails.get(index).getUserCountryRequestDto());
-			}
-			
-			if(updateSingleUserAddressInformationDetails.get(index).getUserPincodeRequestDto() != 0 && updateSingleUserAddressInformationDetails.get(index).getUserPincodeRequestDto() != userAddressInformationDetails.get(index).getUserPincode()) {
-				userAddressInformationDetails.get(index).setUserPincode(updateSingleUserAddressInformationDetails.get(index).getUserPincodeRequestDto());
-			}
-			updateUserAddressInformationList.add(userAddressInformationDetails.get(index));
+		for(UserAddressInformationRequestDto updateSingleUserInformationRequestDto : updateUserInformationRequestDto.getUserAddressInformationReqeustDto()) {
+			UserAddressInformation userAddressInformation = userInformation.getUserAddressInformation().get(count++);
+			userAddressInformation.setUserHouseNumber(updateSingleUserInformationRequestDto.getUserHouseNumberRequestDto());
+			userAddressInformation.setUserLandMark(updateSingleUserInformationRequestDto.getUserLandMarkRequestDto());
+			userAddressInformation.setUserStreet(updateSingleUserInformationRequestDto.getUserStreetRequestDto());
+			userAddressInformation.setUserDistrict(updateSingleUserInformationRequestDto.getUserDistrictRequestDto());
+			userAddressInformation.setUserState(updateSingleUserInformationRequestDto.getUserStateRequestDto());
+			userAddressInformation.setUserCountry(updateSingleUserInformationRequestDto.getUserCountryRequestDto());
+			userAddressInformation.setUserPincode(updateSingleUserInformationRequestDto.getUserPincodeRequestDto());
+			updateUserAddressInformationList.add(userAddressInformation);
 		}
 		
-		userInformation.setUserAddressInformation(userAddressInformationDetails);
+		userInformation.getUserAddressInformation().clear();
+		userInformation.getUserAddressInformation().addAll(updateUserAddressInformationList);
+//		userInformation.setUserAddressInformation(updateUserAddressInformationList);
 		
 		List<Authorities> authoritiesList = new ArrayList<>();
-		List<AuthoritiesRequestDto> updateSingleUserRolesDetails = updateUserInformationRequestDto.getRolesRequestDto();
-		List<Authorities> userRolesDetails = userInformation.getRoles();
-		
-		for(int index = 0; index < updateSingleUserRolesDetails.size(); index++) {
-			
-			if(updateSingleUserRolesDetails.get(index).getRoleRequestDto() != null && updateSingleUserRolesDetails.get(index).getRoleRequestDto() != userRolesDetails.get(index).getRoles()) {
-				userRolesDetails.get(index).setRoles(updateSingleUserRolesDetails.get(index).getRoleRequestDto());
-			}
-			
-			authoritiesList.add(userRolesDetails.get(index));
+		for(AuthoritiesRequestDto authorities : updateUserInformationRequestDto.getRolesRequestDto()) {
+			Authorities authority = new Authorities();
+			authority.setRoles(authorities.getRoleRequestDto());
+			authoritiesList.add(authority);
 		}
 		
 		userInformation.setRoles(authoritiesList);

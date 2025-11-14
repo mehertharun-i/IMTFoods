@@ -15,13 +15,13 @@ public class UserInformationResponseDtoBuilder {
 	
 	public static UserInformationResponseDto buildUserInformationResponseDtoFromUserInformation(UserInformation userInformation) {
 		UserInformationResponseDto userInformationResponseDto = UserInformationResponseDto.builder()
-																						.userFirstNameResponseDto(userInformation.getUserFirstName())
-																						.userLastNameResponseDto(userInformation.getUserLastName())
-																						.userDateOfBirthResponseDto(userInformation.getUserDateOfBirth())
-																						.userPhoneNumberResponseDto(userInformation.getUserPhoneNumber())
-																						.userAddressResponseDto(buildUserAddressInformationResponseDtoFromUserInformation(userInformation.getUserAddressInformation()))
-																						.rolesResponseDto(buildAuthoritiesResponseDtoFromAuthorities(userInformation.getRoles()))
-																						.build();
+																.userFirstNameResponseDto(userInformation.getUserFirstName())
+																.userLastNameResponseDto(userInformation.getUserLastName())
+																.userDateOfBirthResponseDto(userInformation.getUserDateOfBirth())
+																.userPhoneNumberResponseDto(userInformation.getUserPhoneNumber())
+																.userAddressResponseDto(buildUserAddressInformationResponseDtoFromUserInformation(userInformation.getUserAddressInformation()))
+																.rolesResponseDto(buildAuthoritiesResponseDtoFromAuthorities(userInformation.getRoles()))
+																.build();
 		
 		return userInformationResponseDto;
 	}
