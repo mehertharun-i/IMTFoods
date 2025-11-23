@@ -1,0 +1,91 @@
+package com.IMTFoods.DeliveryPartnerManagement.utils;
+
+public enum ItemCategory {
+	
+	VEG_SOUP,
+	
+	NON_VEG_SOUP,
+	
+	VEG_STARTER,
+	
+	NON_VEG_STARTER,
+
+	VEG_MAIN_COURSE,
+	
+	VEG_BIRYANI,
+	
+	NON_VEG_BIRYANI,
+	
+	EGG_BIRYANI,
+	
+	FISH_BIRYANI,
+	
+	RICE,
+	
+	SWEETS,
+	
+	BEVERAGES,
+	
+	VEG_CAKES,
+	
+	CAKES,
+	
+	PASTRY,
+	
+	VEG_PUFF,
+	
+	NON_VEG_PUFF,
+	
+	VEG_BURGER,
+	
+	NON_VEG_BURGER,
+	
+	VEG_PIZZA,
+	
+	NON_VEG_PIZZA,
+	
+	VEG_CHINESE,
+	
+	NON_VEG_CHINESE,
+	
+	BREADS,
+	
+	VEG_SHAWARMA,
+	
+	NON_VEG_SHAWARMA,
+	
+	VEG_DOSA,
+	
+	NON_VEG_DOSA,
+	
+	SHAKES,
+	
+	IDLI,
+	
+	ICE_CREAM,
+	
+	VEG_ROLLS,
+	
+	NON_VEG_ROLLS,
+	
+	VEG_SALAD,
+	
+	NON_VEG_SALAD,
+	
+	CHAT,
+	
+	VEG_MANDI,
+	
+	NON_VEG_MANDI,
+	
+	JUICE,
+	
+	VEG_SANDWICH,
+	
+	NON_VEG_SANDWICH,
+	
+	VEG_TANDOOR,
+	
+	NON_VEG_TANDOOR
+	
+}

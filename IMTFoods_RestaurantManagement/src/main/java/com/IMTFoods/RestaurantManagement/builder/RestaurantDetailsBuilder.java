@@ -17,6 +17,7 @@ public class RestaurantDetailsBuilder {
 		RestaurantDetails restaurantDetails = RestaurantDetails.builder()
 									.restaurantName(restaurantDetailsRequestDto.getRestaurantNameRequestDto())
 									.restaurantOwnerName(restaurantDetailsRequestDto.getRestaurantOwnerNameRequestDto())
+									.restaurantPhoneNumber(restaurantDetailsRequestDto.getRestaurantPhoneNumberRequestDto())
 									.restaurantType(restaurantDetailsRequestDto.getRestaurantTypeRequestDto())
 									.restaurantRating(restaurantDetailsRequestDto.getRestaurantRatingRequestDto())
 									.isRestaurantOpened(true)

@@ -18,6 +18,7 @@ public class RestaurantDetailsResponseBuilder {
 		RestaurantDetailsResponseDto restaurantDetailsResponseDto = RestaurantDetailsResponseDto.builder()
 									.restaurantNameResponseDto(savedRestaurantDetails.getRestaurantName())
 									.restaurantOwnerNameResponseDto(savedRestaurantDetails.getRestaurantOwnerName())
+									.restaurantPhoneNumberResponseDto(savedRestaurantDetails.getRestaurantPhoneNumber())
 									.restaurantTypeResponseDto(savedRestaurantDetails.getRestaurantType())
 									.restaurantRatingResponseDto(savedRestaurantDetails.getRestaurantRating())
 									.isRestaurantOpenedResponeDto(savedRestaurantDetails.isRestaurantOpened())

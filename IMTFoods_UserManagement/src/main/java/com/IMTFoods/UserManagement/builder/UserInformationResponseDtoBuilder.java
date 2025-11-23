@@ -34,7 +34,7 @@ public class UserInformationResponseDtoBuilder {
 			
 			userAddressInformationResponseDto.setUserHouseNumberResponseDto(userAddressInformation.getUserHouseNumber());
 			userAddressInformationResponseDto.setUserLandMarkResponseDto(userAddressInformation.getUserLandMark());
-			userAddressInformationResponseDto.setUseStreetResponseDto(userAddressInformation.getUserStreet());
+			userAddressInformationResponseDto.setUserStreetResponseDto(userAddressInformation.getUserStreet());
 			userAddressInformationResponseDto.setUserDistrictResponseDto(userAddressInformation.getUserDistrict());
 			userAddressInformationResponseDto.setUserStateResponseDto(userAddressInformation.getUserState());
 			userAddressInformationResponseDto.setUserCountryResponseDto(userAddressInformation.getUserCountry());

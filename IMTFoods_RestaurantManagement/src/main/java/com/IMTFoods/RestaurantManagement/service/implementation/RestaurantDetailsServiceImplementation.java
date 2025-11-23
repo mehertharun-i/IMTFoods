@@ -80,6 +80,7 @@ public class RestaurantDetailsServiceImplementation implements RestaurantDetails
 		RestaurantDetails restaurantDetails = restaurantDetailsRepository.findById(restaurantId).orElseThrow( () -> new RestaurantDetailsNotFoundException("Invalid Restaurant Details"));
 		restaurantDetails.setRestaurantName(restaurantDetailsRequestDto.getRestaurantNameRequestDto());
 		restaurantDetails.setRestaurantOwnerName(restaurantDetailsRequestDto.getRestaurantOwnerNameRequestDto());
+		restaurantDetails.setRestaurantPhoneNumber(restaurantDetailsRequestDto.getRestaurantPhoneNumberRequestDto());
 		restaurantDetails.setRestaurantType(restaurantDetailsRequestDto.getRestaurantTypeRequestDto());
 		restaurantDetails.setRestaurantRating(restaurantDetailsRequestDto.getRestaurantRatingRequestDto());
 		restaurantDetails.setRestaurantOpened(true);

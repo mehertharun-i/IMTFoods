@@ -19,6 +19,8 @@ public class RestaurantDetailsRequestDto {
 	
 	private String restaurantOwnerNameRequestDto;
 	
+	private String restaurantPhoneNumberRequestDto;
+	
 	private RestaurantType restaurantTypeRequestDto;
 	
 	private double restaurantRatingRequestDto;

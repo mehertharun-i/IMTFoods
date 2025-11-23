@@ -12,8 +12,6 @@ public enum AuthorityRoles {
 	
 	ROLE_OPS,
 	
-	ROLE_DBADMIN,
-	
-	ROLE_DELIVERY_PERSON,
+	ROLE_DBADMIN
 	
 }

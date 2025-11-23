@@ -1,0 +1,12 @@
+package com.IMTFoods.DeliveryPartnerManagement.service;
+
+import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAssignmentRequestDto;
+import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAssignmentResponseDto;
+
+public interface DeliveryPartnerAssignmentService {
+
+	DeliveryPartnerAssignmentResponseDto createDeliveryAssignmnet(DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto);
+
+	DeliveryPartnerAssignmentResponseDto getDeliveryPartnerAssignmentById(long deliveryAssignmentId);
+
+}

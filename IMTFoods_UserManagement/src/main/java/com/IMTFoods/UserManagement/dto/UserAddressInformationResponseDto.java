@@ -15,7 +15,7 @@ public class UserAddressInformationResponseDto {
 	
 	private String userLandMarkResponseDto;
 	
-	private String useStreetResponseDto;
+	private String userStreetResponseDto;
 	
 	private String userDistrictResponseDto;
 	

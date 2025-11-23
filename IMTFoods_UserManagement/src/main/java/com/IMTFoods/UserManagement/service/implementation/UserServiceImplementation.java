@@ -119,14 +119,18 @@ public class UserServiceImplementation implements UserService{
 		userInformation.getUserAddressInformation().addAll(updateUserAddressInformationList);
 //		userInformation.setUserAddressInformation(updateUserAddressInformationList);
 		
+		count = 0;
+		
 		List<Authorities> authoritiesList = new ArrayList<>();
 		for(AuthoritiesRequestDto authorities : updateUserInformationRequestDto.getRolesRequestDto()) {
-			Authorities authority = new Authorities();
+			Authorities authority = userInformation.getRoles().get(count++);
 			authority.setRoles(authorities.getRoleRequestDto());
 			authoritiesList.add(authority);
 		}
 		
-		userInformation.setRoles(authoritiesList);
+		userInformation.getRoles().clear();
+		userInformation.getRoles().addAll(authoritiesList);
+//		userInformation.setRoles(authoritiesList);
 		
 		return userInformation;
 	}

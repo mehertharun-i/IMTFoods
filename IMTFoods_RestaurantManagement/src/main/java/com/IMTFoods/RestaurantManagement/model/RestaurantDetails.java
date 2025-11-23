@@ -46,6 +46,9 @@ public class RestaurantDetails {
 	private double restaurantRating;
 	
 	@Column(nullable = false)
+	private String restaurantPhoneNumber;
+	
+	@Column(nullable = false)
 	private boolean isRestaurantOpened;
 	
 	@Builder.Default
@@ -58,25 +61,25 @@ public class RestaurantDetails {
 	@ToString.Exclude
 	private List<RestaurantAddress> restaurantAddress = new ArrayList<>();
 
-	public void addRestaurantItem(RestaurantItems restaurantItems) {
-		this.restaurantItems.add(restaurantItems);
-		restaurantItems.setRestaurantDetailsId(this);
-	}
-	
-	public void removeRestaurantItem(RestaurantItems restaurantItems) {
-		this.restaurantItems.remove(restaurantItems);
-		restaurantItems.setRestaurantDetailsId(null);
-	}
-	
-	public void addRestaurantAddress(RestaurantAddress restaurantAddress) {
-		this.restaurantAddress.add(restaurantAddress);
-		restaurantAddress.setRestaurantDetailsId(this);
-	}
-	
-	public void removeRestaurantAddress(RestaurantAddress restaurantAddress) {
-		this.restaurantAddress.remove(restaurantAddress);
-		restaurantAddress.setRestaurantDetailsId(null);
-	}
+//	public void addRestaurantItem(RestaurantItems restaurantItems) {
+//		this.restaurantItems.add(restaurantItems);
+//		restaurantItems.setRestaurantDetailsId(this);
+//	}
+//	
+//	public void removeRestaurantItem(RestaurantItems restaurantItems) {
+//		this.restaurantItems.remove(restaurantItems);
+//		restaurantItems.setRestaurantDetailsId(null);
+//	}
+//	
+//	public void addRestaurantAddress(RestaurantAddress restaurantAddress) {
+//		this.restaurantAddress.add(restaurantAddress);
+//		restaurantAddress.setRestaurantDetailsId(this);
+//	}
+//	
+//	public void removeRestaurantAddress(RestaurantAddress restaurantAddress) {
+//		this.restaurantAddress.remove(restaurantAddress);
+//		restaurantAddress.setRestaurantDetailsId(null);
+//	}
 
 	public RestaurantDetails(String restaurantName, String restaurantOwnerName, RestaurantType restaurantType,
 			double restaurantRating, boolean isRestaurantOpened, List<RestaurantItems> restaurantItems,

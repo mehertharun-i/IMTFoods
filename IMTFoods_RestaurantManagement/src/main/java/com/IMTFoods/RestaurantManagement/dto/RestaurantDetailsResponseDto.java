@@ -19,6 +19,8 @@ public class RestaurantDetailsResponseDto {
 	
 	private String restaurantOwnerNameResponseDto;
 	
+	private String restaurantPhoneNumberResponseDto;
+	
 	private RestaurantType restaurantTypeResponseDto;
 	
 	private double restaurantRatingResponseDto;

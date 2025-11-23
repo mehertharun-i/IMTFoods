@@ -1,0 +1,50 @@
+package com.IMTFoods.DeliveryPartnerManagement.service.implementation;
+
+import org.springframework.stereotype.Service;
+
+import com.IMTFoods.DeliveryPartnerManagement.builder.DeliveryPartnerAssignmentBuilder;
+import com.IMTFoods.DeliveryPartnerManagement.builder.DeliveryPartnerAssignmentResponseBuilder;
+import com.IMTFoods.DeliveryPartnerManagement.dao.DeliveryAssignmentRepository;
+import com.IMTFoods.DeliveryPartnerManagement.dao.DeliveryPartnerRepository;
+import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAssignmentRequestDto;
+import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAssignmentResponseDto;
+import com.IMTFoods.DeliveryPartnerManagement.exception.DeliveryAssignmentIdNotFoundException;
+import com.IMTFoods.DeliveryPartnerManagement.exception.DeliveryPartnerIdNotFoundException;
+import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerAssignments;
+import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerDetails;
+import com.IMTFoods.DeliveryPartnerManagement.service.DeliveryPartnerAssignmentService;
+
+@Service
+public class DeliveryPartnerAssignmentServiceImplementation implements DeliveryPartnerAssignmentService{
+
+	private final DeliveryAssignmentRepository deliveryAssignmentRepository;
+	private final DeliveryPartnerRepository deliveryPartnerRepository;
+	
+	public DeliveryPartnerAssignmentServiceImplementation(DeliveryAssignmentRepository deliveryAssignmentRepository, DeliveryPartnerRepository deliveryPartnerRepository) {
+		this.deliveryAssignmentRepository = deliveryAssignmentRepository;
+		this.deliveryPartnerRepository = deliveryPartnerRepository;
+	}
+
+	@Override
+	public DeliveryPartnerAssignmentResponseDto createDeliveryAssignmnet(
+			DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto) {
+		
+		DeliveryPartnerAssignments deliveryPartnerAssignment = DeliveryPartnerAssignmentBuilder.buildDeliveryPartnerAssignmentFromDeliveryPartnerAssignmentRequestDto(deliveryPartnerAssignmentRequestDto);
+		DeliveryPartnerDetails deliveryPartnerDetails = deliveryPartnerRepository.findById(deliveryPartnerAssignmentRequestDto.getDeliveryPartnerAssignmentRequestDtoDeliveryPartnerId()).orElseThrow( () -> new DeliveryPartnerIdNotFoundException("Invalid Delivery Partner Id"));
+		deliveryPartnerAssignment.setDeliveryPartnerId(deliveryPartnerDetails);
+		DeliveryPartnerAssignments savedDeliveryAssignment = deliveryAssignmentRepository.save(deliveryPartnerAssignment);
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = DeliveryPartnerAssignmentResponseBuilder.buildDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(savedDeliveryAssignment);
+
+		return deliveryPartnerAssignmentResponseDto;
+	}
+
+	@Override
+	public DeliveryPartnerAssignmentResponseDto getDeliveryPartnerAssignmentById(long deliveryAssignmentId) {
+		DeliveryPartnerAssignments deliveryPartnerAssignments = deliveryAssignmentRepository.findById(deliveryAssignmentId).orElseThrow( () -> new DeliveryAssignmentIdNotFoundException("Invalid Delivery Assignment Id"));
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = DeliveryPartnerAssignmentResponseBuilder.buildDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(deliveryPartnerAssignments);
+		
+		return deliveryPartnerAssignmentResponseDto;
+	}
+	
+	
+}
