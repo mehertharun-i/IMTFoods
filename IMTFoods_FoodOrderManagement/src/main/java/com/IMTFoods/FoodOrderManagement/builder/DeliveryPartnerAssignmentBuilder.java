@@ -1,11 +1,14 @@
 package com.IMTFoods.FoodOrderManagement.builder;
 
+import org.springframework.stereotype.Component;
+
 import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentRequestDto;
 import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 
+@Component
 public class DeliveryPartnerAssignmentBuilder {
 	
-	public static DeliveryPartnerAssignmentRequestDto buildDeliveryPartnerAssignmentRequestDtoFromFoodOrder(FoodOrder foodOrder) {
+	public DeliveryPartnerAssignmentRequestDto buildDeliveryPartnerAssignmentRequestDtoFromFoodOrder(FoodOrder foodOrder) {
 		
 		DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto = DeliveryPartnerAssignmentRequestDto.builder()
 										.deliveryPartnerAssignmentRequestDtoOrderId(foodOrder.getOrderId())

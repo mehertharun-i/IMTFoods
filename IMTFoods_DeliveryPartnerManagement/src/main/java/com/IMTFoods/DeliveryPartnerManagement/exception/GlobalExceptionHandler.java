@@ -18,4 +18,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
 	}
 	
+	@ExceptionHandler(NoDeliveryPartnerAvailableException.class)
+	public ResponseEntity<String> handleNoDeliveryPartnerAvailableException(NoDeliveryPartnerAvailableException exceptionMessage){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
+	}
 }

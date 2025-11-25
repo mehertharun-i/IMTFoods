@@ -3,6 +3,7 @@ package com.IMTFoods.FoodOrderManagement.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentResponseDto;
@@ -17,16 +18,12 @@ import com.IMTFoods.FoodOrderManagement.dto.UserInformationResponseDto;
 import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 import com.IMTFoods.FoodOrderManagement.model.OrderItems;
 import com.IMTFoods.FoodOrderManagement.model.PaymentDetails;
-import com.IMTFoods.FoodOrderManagement.utils.AssignmentStatus;
 
+@Component
 public class FoodOrderResponseDtoBuilder {
 	
 	private final RestTemplate restTemplate;
-	private static UserInformationResponseDto userInformationResponseDto;
-	private static RestaurantDetailsResponseDto restaurantDetailsResponseDto;
-	private static DeliveryPartnerDetailsResponseDto deliveryPartnerDetailsResponseDto; 
-	public static DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto;
-	
+		
 	public FoodOrderResponseDtoBuilder(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
@@ -36,23 +33,35 @@ public class FoodOrderResponseDtoBuilder {
 	}
 	
 
-	public static FoodOrderResponseDto buildFoodOrderResponseDtoFromFoodOrder(FoodOrder foodOrder) {
+	public FoodOrderResponseDto buildFoodOrderResponseDtoFromFoodOrder(FoodOrder foodOrder) {
 		
-		FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder = new FoodOrderResponseDtoBuilder();
+		long userId = foodOrder.getUserId();
+		long userAddressId = foodOrder.getUserAddressId();
+		long restaurantId = foodOrder.getRestaurantId();
+		long restaurantAddressId = foodOrder.getRestaurantAddressId();
+		long deliveryPartnerId = foodOrder.getDeliveryPartnerId();
+		long deliveryAssignmentId = foodOrder.getDeliveryAssignmentId();
 		
+		UserInformationResponseDto userInformationResponseDto = fetchOrderedUserNameFromUserManagement(userId);
+		UserAddressInformationResponseDto userAddressInformationResponseDto = fetchUserAddressInformationResponseDtoFromUserManagement(userAddressId);
+		RestaurantDetailsResponseDto restaurantDetailsResponseDto = fetchRestaurantNameFromRestaurantManagement(restaurantId);
+		RestaurantAddressResponseDto restaurantAddressResponseDto = fetchRestaurantAddressResponseDtoFromRestaurantManagement(restaurantAddressId);
+		DeliveryPartnerDetailsResponseDto deliveryPartnerDetailsResponseDto = fetchDeliveryPartnerNameFromDeliveryPartnerManagement(deliveryPartnerId);
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = fetchDeliveryAssignmentFromOrderedFoodDetails(deliveryAssignmentId);
+				
 		FoodOrderResponseDto foodOrderResponseDto = FoodOrderResponseDto.builder()
 							.foodOrderResponseDtoOrderId(foodOrder.getOrderId())
 							.foodOrderResponseDtoTrackingId(foodOrder.getTrackingId())
-							.foodOrderResponseDtoOrderedUserName(foodOrderResponseDtoBuilder.fetchOrderedUserNameFromUserManagement(foodOrder.getUserId()))
+							.foodOrderResponseDtoOrderedUserName(addFirstNameAndLastName(userInformationResponseDto))
 							.foodOrderResponseDtoOrderedUserPhoneNumber(userInformationResponseDto.getUserPhoneNumberResponseDto())
-							.foodOrderResponseDtoOrderedUserAddressDetails(foodOrderResponseDtoBuilder.fetchUserAddressInformationResponseDtoFromUserManagement(foodOrder.getUserAddressId())) 
-							.foodOrderResponseDtoRestaurantName(foodOrderResponseDtoBuilder.fetchRestaurantNameFromRestaurantManagement(foodOrder.getRestaurantId()))
+							.foodOrderResponseDtoOrderedUserAddressDetails(userAddressInformationResponseDto) 
+							.foodOrderResponseDtoRestaurantName(restaurantDetailsResponseDto.getRestaurantNameResponseDto())
 							.foodOrderResponseDtoRestaurantPhoneNumber(restaurantDetailsResponseDto.getRestaurantPhoneNumberResponseDto())
-							.foodOrderResponseDtoRestaurantAddress(foodOrderResponseDtoBuilder.fetchRestaurantAddressResponseDtoFromRestaurantManagement(foodOrder.getRestaurantAddressId())) 
-							.foodOrderResponseDtoDeliveryPartnerName(foodOrderResponseDtoBuilder.fetchDeliveryPartnerNameFromDeliveryPartnerManagement(foodOrder.getDeliveryPartnerId()))
+							.foodOrderResponseDtoRestaurantAddress(restaurantAddressResponseDto) 
+							.foodOrderResponseDtoDeliveryPartnerName(deliveryPartnerDetailsResponseDto.getDeliveryPartnerNameResponseDto())
 							.foodOrderResponseDtoDeliveryPartnerPhoneNumber(deliveryPartnerDetailsResponseDto.getDeliveryPartnerPhoneNumberResponseDto())
-							.foodOrderResponseDtoDeliveryPartnerAssignmentId(foodOrder.getDeliveryAssignmentId())
-							.foodOrderResponseDtoDeliveryPartnerAssignmentStatus(foodOrderResponseDtoBuilder.fetchDeliveryAssignmentFromOrderedFoodDetails(foodOrder.getDeliveryAssignmentId()))
+							.foodOrderResponseDtoDeliveryPartnerAssignmentId(deliveryAssignmentId)
+							.foodOrderResponseDtoDeliveryPartnerAssignmentStatus(deliveryPartnerAssignmentResponseDto.getDeliveryPartnerAssignmentResponseDtoAssignmentStatus())
 							.foodOrderResponseDtoDeliveryPartnerAssignmentCreatedAt(deliveryPartnerAssignmentResponseDto.getDeliveryPartnerAssignmentResponseDtoDeliveryAssignmentCreatedAt())
 							.foodOrderResponseDtoEstimatedDeliveryTime(deliveryPartnerAssignmentResponseDto.getDeliveryPartnerAssignmentResponseDtoEstimatedDeliveryTime())
 							.foodOrderResponseDtoOrderItemsResponseDto(buildListOfOrderItemsResponseDtoFromOrderItems(foodOrder.getOrderItems()))
@@ -65,30 +74,31 @@ public class FoodOrderResponseDtoBuilder {
 	}
 	
 //fetching details of User from UserManagement Service related logic
-	private String fetchOrderedUserNameFromUserManagement(long userId) {
-		userInformationResponseDto = restTemplate.getForObject("http://localhost:9001/user/"+userId, UserInformationResponseDto.class);
-		String userName = userInformationResponseDto.getUserFirstNameResponseDto() +" "+userInformationResponseDto.getUserLastNameResponseDto();
-		return userName;
+	private UserInformationResponseDto fetchOrderedUserNameFromUserManagement(long userId) {
+		UserInformationResponseDto userInformationResponseDto = restTemplate.getForObject("http://localhost:9001/user/"+userId, UserInformationResponseDto.class);
+		return userInformationResponseDto;
+	}
+	
+	private String addFirstNameAndLastName(UserInformationResponseDto userInformationResponseDto) {
+		return userInformationResponseDto.getUserFirstNameResponseDto() +" "+ userInformationResponseDto.getUserLastNameResponseDto();
 	}
 
 //fetching details of Restaurant from RestaurantManagement Service related logic
-	private String fetchRestaurantNameFromRestaurantManagement(long restaurantId) {
-		restaurantDetailsResponseDto = restTemplate.getForObject("http://localhost:9002/restaurant/"+restaurantId, RestaurantDetailsResponseDto.class);
-		String restaurantName = restaurantDetailsResponseDto.getRestaurantNameResponseDto();
-		return restaurantName;
+	private RestaurantDetailsResponseDto fetchRestaurantNameFromRestaurantManagement(long restaurantId) {
+		RestaurantDetailsResponseDto restaurantDetailsResponseDto = restTemplate.getForObject("http://localhost:9002/restaurant/"+restaurantId, RestaurantDetailsResponseDto.class);
+		return restaurantDetailsResponseDto;
 	}
 
 //fetching details of DeliveryPartner from DeliveryPartnerManagement Service related logic
-	private String fetchDeliveryPartnerNameFromDeliveryPartnerManagement(long deliveryPartnerId) {
-		deliveryPartnerDetailsResponseDto = restTemplate.getForObject("http://localhost:9003/deliveryPartner/"+deliveryPartnerId, DeliveryPartnerDetailsResponseDto.class);
-		String deliveryPartnerName = deliveryPartnerDetailsResponseDto.getDeliveryPartnerNameResponseDto();
-		return deliveryPartnerName;
+	private DeliveryPartnerDetailsResponseDto fetchDeliveryPartnerNameFromDeliveryPartnerManagement(long deliveryPartnerId) {
+		DeliveryPartnerDetailsResponseDto deliveryPartnerDetailsResponseDto = restTemplate.getForObject("http://localhost:9003/deliveryPartner/"+deliveryPartnerId, DeliveryPartnerDetailsResponseDto.class);
+		return deliveryPartnerDetailsResponseDto;
 	}
 		
 //fetching Details of DeliveryAssignment from DeliveryPartnerManagement Service related logic
-	private AssignmentStatus fetchDeliveryAssignmentFromOrderedFoodDetails(long deliveryPartnerAssignmentId) {
-		deliveryPartnerAssignmentResponseDto = restTemplate.getForObject("http://localhost:9003/deliveryassignment/assign/find/"+deliveryPartnerAssignmentId, DeliveryPartnerAssignmentResponseDto.class);
-		return deliveryPartnerAssignmentResponseDto.getDeliveryPartnerAssignmentResponseDtoAssignmentStatus(); 
+	private DeliveryPartnerAssignmentResponseDto fetchDeliveryAssignmentFromOrderedFoodDetails(long deliveryPartnerAssignmentId) {
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = restTemplate.getForObject("http://localhost:9003/deliveryassignment/assign/find/"+deliveryPartnerAssignmentId, DeliveryPartnerAssignmentResponseDto.class);
+		return deliveryPartnerAssignmentResponseDto; 
 	}
 	
 //fetching Details of User Address from UserManagement Service related logic

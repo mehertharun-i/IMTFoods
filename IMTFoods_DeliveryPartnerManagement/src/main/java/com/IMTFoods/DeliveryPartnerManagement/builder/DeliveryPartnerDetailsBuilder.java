@@ -3,15 +3,21 @@ package com.IMTFoods.DeliveryPartnerManagement.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAddressRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerAddress;
 import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerDetails;
 import com.IMTFoods.DeliveryPartnerManagement.utils.CurrentStatus;
 
+@Component
 public class DeliveryPartnerDetailsBuilder {
 	
 	public static DeliveryPartnerDetails buildDeliveryPartnerDetailsFromDeliveryPartnerDetailsRequestDto(DeliveryPartnerDetailsRequestDto deliveryPartnerDetailsRequestDto) {
+		
+		List<DeliveryPartnerAddress> addressList = buildListOfDeliveryPartnerAddressFromDeliveryPartnerAddressRequestDto(deliveryPartnerDetailsRequestDto.getDeliveryPartnerAddressRequestDto());
+		
 		DeliveryPartnerDetails deliveryPartnerDetails = DeliveryPartnerDetails.builder()
 								.deliveryPartnerName(deliveryPartnerDetailsRequestDto.getDeliveryPartnerNameRequestDto())
 								.deliveryPartnerAadharNumber(deliveryPartnerDetailsRequestDto.getDeliveryPartnerAadharNumberRequestDto())
@@ -20,7 +26,7 @@ public class DeliveryPartnerDetailsBuilder {
 								.deliveryPartnerDateOfBirth(deliveryPartnerDetailsRequestDto.getDeliveryPartnerDateOfBirthRequestDto())
 								.deliveryPartnerPhoneNumber(deliveryPartnerDetailsRequestDto.getDeliveryPartnerPhoneNumberRequestDto())
 								.deliveryPartnerCurrentStatus(deliveryPartnerDetailsRequestDto.getDeliveryPartnerCurrentStatusRequestDto())
-								.deliveryPartnerAddress(buildListOfDeliveryPartnerAddressFromDeliveryPartnerAddressRequestDto(deliveryPartnerDetailsRequestDto.getDeliveryPartnerAddressRequestDto()))
+								.deliveryPartnerAddress(addressList)
 								.build();
 		
 		deliveryPartnerDetails.setIsloggedIn(deliveryPartnerDetails.getDeliveryPartnerCurrentStatus().equals(CurrentStatus.OFFLINE) ? false : true);

@@ -1,15 +1,15 @@
-package com.IMTFoods.FoodOrderManagement.config;
+package com.IMTFoods.DeliveryPartnerManagement.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class FoodOrderConfig {
-	
+public class ConfigClass {
+
 	@Bean
 	RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
+	
 }

@@ -17,6 +17,7 @@ import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsResponse
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsUpdateRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsUpdateResponseDto;
 import com.IMTFoods.DeliveryPartnerManagement.exception.DeliveryPartnerIdNotFoundException;
+import com.IMTFoods.DeliveryPartnerManagement.exception.NoDeliveryPartnerAvailableException;
 import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerAddress;
 import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerDetails;
 import com.IMTFoods.DeliveryPartnerManagement.service.DeliveryPartnerDetailsService;
@@ -41,6 +42,19 @@ public class DeliveryPartnerDetailsServiceImplementation implements DeliveryPart
 		return deliveryPartnerDetailsResponseDto;
 	}
 
+	@Override
+	public List<DeliveryPartnerDetailsResponseDto> signInAll(
+			List<DeliveryPartnerDetailsRequestDto> deliveryPartnerDetailsRequestDtoList) {
+		
+		List<DeliveryPartnerDetailsResponseDto> deliveryPartnerDetailsResponseDtoList = new ArrayList<>();
+		for(DeliveryPartnerDetailsRequestDto deliveryPartnerDetailsRequestDto : deliveryPartnerDetailsRequestDtoList) {
+			DeliveryPartnerDetailsResponseDto signIn = signIn(deliveryPartnerDetailsRequestDto);
+			deliveryPartnerDetailsResponseDtoList.add(signIn);
+		}
+		
+		return deliveryPartnerDetailsResponseDtoList;
+	}
+	
 	@Override
 	public DeliveryPartnerDetailsResponseDto getDeliveryPartnerDetailsById(long deliveryPartnerId) {
 		DeliveryPartnerDetails deliveryPartnerDetails = deliveryPartnerRepository.findById(deliveryPartnerId).orElseThrow( () -> new DeliveryPartnerIdNotFoundException("Invalid Delivery Partner Id"));
@@ -73,7 +87,7 @@ public class DeliveryPartnerDetailsServiceImplementation implements DeliveryPart
 		deliveryPartnerDetails.setDeliveryPartnerDateOfBirth(deliveryPartnerDetailsUpdateRequestDto.getDeliveryPartnerDateOfBirthRequestDto());
 		deliveryPartnerDetails.setDeliveryPartnerPhoneNumber(deliveryPartnerDetailsUpdateRequestDto.getDeliveryPartnerPhoneNumberRequestDto());
 		deliveryPartnerDetails.setDeliveryPartnerCurrentStatus(deliveryPartnerDetailsUpdateRequestDto.getDeliveryPartnerCurrentStatusRequestDto());
-		deliveryPartnerDetails.setIsloggedIn(deliveryPartnerDetailsUpdateRequestDto.getDeliveryPartnerCurrentStatusRequestDto().equals(CurrentStatus.OFFLINE) ? false : true);
+		deliveryPartnerDetails.setIsloggedIn(!deliveryPartnerDetailsUpdateRequestDto.getDeliveryPartnerCurrentStatusRequestDto().equals(CurrentStatus.OFFLINE));
 
 		List<DeliveryPartnerAddress> deliveryPartnerAddressList = new ArrayList<>();
 		int count = 0;
@@ -94,7 +108,7 @@ public class DeliveryPartnerDetailsServiceImplementation implements DeliveryPart
 	}
 
 	@Override
-	public Long getAvailableDeliveryPartnerDetails() {
+	public DeliveryPartnerDetailsResponseDto getAvailableDeliveryPartnerDetails() throws NoDeliveryPartnerAvailableException {
 
 		List<DeliveryPartnerDetails> allDeliveryPartnerDetails = deliveryPartnerRepository.findAll();
 		
@@ -107,14 +121,38 @@ public class DeliveryPartnerDetailsServiceImplementation implements DeliveryPart
 			}
 		}
 		
+		if(availableDeliveryPartnerIdList.isEmpty()) {
+			throw new NoDeliveryPartnerAvailableException("Searching for the Delivery Partner, please wait");
+		}
+		
 		Random random = new Random();
 		
-		long generatesRandomDeliveryPartnerIndex = Math.abs(random.nextLong(availableDeliveryPartnerIdList.size()));
+		int generatesRandomDeliveryPartnerIndex = random.nextInt(availableDeliveryPartnerIdList.size());
 		
-		availableDeliveryPartnerId = availableDeliveryPartnerIdList.get((int)generatesRandomDeliveryPartnerIndex);
+		availableDeliveryPartnerId = availableDeliveryPartnerIdList.get(generatesRandomDeliveryPartnerIndex);
+		DeliveryPartnerDetails deliveryPartnerDetails = deliveryPartnerRepository.findById(availableDeliveryPartnerId).orElseThrow( () -> new DeliveryPartnerIdNotFoundException("Invalid Delivery Partner Id"));
+		DeliveryPartnerDetailsResponseDto deliveryPartnerDetailsResponseDto = DeliveryPartnerDetailsResponseBuilder.buildDeliveryPartnerDetailsResponseDtoFromDeliveryPartnerDetails(deliveryPartnerDetails);
 		
-		return availableDeliveryPartnerId;
+		return deliveryPartnerDetailsResponseDto;
 	}
+
+	@Override
+	public void updateDeliveryPartnerCurrentStatus(long deliveryPartnerId, CurrentStatus currentStatus) {
+		
+		DeliveryPartnerDetails deliveryPartnerDetails = deliveryPartnerRepository.findById(deliveryPartnerId).orElseThrow( () -> new DeliveryPartnerIdNotFoundException("Invalid Delivery Partner Id"));
+		deliveryPartnerDetails.setDeliveryPartnerCurrentStatus(currentStatus);
+		deliveryPartnerRepository.save(deliveryPartnerDetails);
+	}
+
+	@Override
+	public void updateDeliveryPartnerTotalDeliveryCount(long deliveryPartnerId) {
+		DeliveryPartnerDetails deliveryPartnerDetails = deliveryPartnerRepository.findById(deliveryPartnerId).orElseThrow( () -> new DeliveryPartnerIdNotFoundException("Invalid Delivery Partner Id"));
+		int totalAssignedDelivery = deliveryPartnerDetails.getTotalAssignedDelivery();
+		deliveryPartnerDetails.setTotalAssignedDelivery(++totalAssignedDelivery);
+		deliveryPartnerRepository.save(deliveryPartnerDetails);
+
+	}
+
 
 	
 

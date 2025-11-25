@@ -3,7 +3,7 @@ package com.IMTFoods.FoodOrderManagement.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,44 +21,45 @@ import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException
 import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
 import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
+import com.IMTFoods.FoodOrderManagement.utils.CurrentStatus;
 
 @Service
 public class FoodOrderServiceImplementation implements FoodOrderService {
 
-	@Autowired
-	private FoodOrderBuilder foodOrderBuilder;
-	
+	private final FoodOrderBuilder foodOrderBuilder;
+	private final DeliveryPartnerAssignmentBuilder deliveryPartnerAssignmentBuilder;
 	private final FoodOrderRepository foodOrderRepository;
+	private final FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder;
 	private final RestTemplate restTemplate;
 	
-	public FoodOrderServiceImplementation(FoodOrderRepository foodOrderRepository, RestTemplate restTemplate) {
+	public FoodOrderServiceImplementation(FoodOrderRepository foodOrderRepository, RestTemplate restTemplate,
+			DeliveryPartnerAssignmentBuilder deliveryPartnerAssignmentBuilder, FoodOrderBuilder foodOrderBuilder,
+			FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder) {
 		this.foodOrderRepository = foodOrderRepository;
 		this.restTemplate = restTemplate;
+		this.deliveryPartnerAssignmentBuilder = deliveryPartnerAssignmentBuilder;
+		this.foodOrderBuilder = foodOrderBuilder;
+		this.foodOrderResponseDtoBuilder = foodOrderResponseDtoBuilder;
 	}
 	
 	@Override
-	public FoodOrderResponseDto orderFood(FoodOrderRequestDto foodOrderRequestDto) throws UserAddressAndRestaurantAddressAreNotCloserException{
+	public FoodOrderResponseDto orderFood(FoodOrderRequestDto foodOrderRequestDto) throws Exception{
 		
 		UserAddressInformationResponseDto userAddress = fetchUserAddressInformationResponseDtoFromUserManagement(foodOrderRequestDto.getFoodOrderRequestDtoUserAddressId());
 		RestaurantAddressResponseDto restaurantAddress = fetchRestaurantAddressResponseDtoFromRestaurantManagement(foodOrderRequestDto.getFoodOrderRequestDtoRestaurantAddressId());
+		
 		if(userAddress.getUserDistrictResponseDto().equals(restaurantAddress.getRestaurantDistrictResponseDto())) {
 			FoodOrder orderedFood = foodOrderBuilder.buildFoodOrderFromFoodOrderRequestDto(foodOrderRequestDto);
-			FoodOrder savedOrderedFood = foodOrderRepository.save(orderedFood);
+			FoodOrder initialSavedOrderedFood = foodOrderRepository.save(orderedFood);
 			
-			DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto= DeliveryPartnerAssignmentBuilder.buildDeliveryPartnerAssignmentRequestDtoFromFoodOrder(savedOrderedFood);
-			DeliveryPartnerAssignmentResponseDto deliveryAssignmentDetails = ExecuteDeliveryAssignmentFromOrderedFoodDetails(deliveryPartnerAssignmentRequestDto);
+			orderedFood.setDeliveryAssignmentId(ExecuteDeliveryAssignmentFromOrderedFoodDetails(initialSavedOrderedFood).getDeliveryPartnerAssignmentResponseDtoAssignmentId());
+						
+			FoodOrder finalSavedOrderedFood = foodOrderRepository.save(orderedFood);
 			
-			System.out.println("1. savedOrderedFood After saving for the First time  : "+savedOrderedFood);
+			updateTheDeliveryPartnerCurrentStatus(finalSavedOrderedFood);
+			updateTheDeliveryPartnerTotalAssignDeliveryCount(finalSavedOrderedFood.getDeliveryPartnerId());
 			
-			savedOrderedFood.setDeliveryAssignmentId(deliveryAssignmentDetails.getDeliveryPartnerAssignmentResponseDtoAssignmentId());
-			
-			System.out.println("2. savedOrderedFood Before saving second time : "+savedOrderedFood);
-			
-			FoodOrder savedOrderedFood1 = foodOrderRepository.save(savedOrderedFood);
-			
-			System.out.println("3. savedOrderedFood1 After saving the second time  : "+savedOrderedFood1);
-			
-			FoodOrderResponseDto foodOrderResponseDto = FoodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(savedOrderedFood1);
+			FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(finalSavedOrderedFood);
 			return foodOrderResponseDto;
 		}else {
 			 throw new UserAddressAndRestaurantAddressAreNotCloserException("User Address Location and Restaurant Address Location is far aray");
@@ -69,7 +70,7 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 	@Override
 	public FoodOrderResponseDto getOrderedFoodDetailsById(long orderId) {
 		FoodOrder foodOrder = foodOrderRepository.findById(orderId).orElseThrow( () ->  new OrderedFoodIdNotFoundException("Invalid Ordered Food Id"));
-		FoodOrderResponseDto foodOrderResponseDto = FoodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(foodOrder);
+		FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(foodOrder);
 		
 		return foodOrderResponseDto;
 	}
@@ -79,7 +80,7 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 		List<FoodOrder> foodOrderList = foodOrderRepository.findAll();
 		List<FoodOrderResponseDto> foodOrderResponseDtoList = new ArrayList<>();
 		for(FoodOrder foodOrder : foodOrderList) {
-			FoodOrderResponseDto foodOrderResponseDto = FoodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(foodOrder);
+			FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(foodOrder);
 			foodOrderResponseDtoList.add(foodOrderResponseDto);
 		}
 		return foodOrderResponseDtoList;
@@ -87,9 +88,13 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 	
 	
 	
-	private DeliveryPartnerAssignmentResponseDto ExecuteDeliveryAssignmentFromOrderedFoodDetails(DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto) {
-		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentId = restTemplate.postForObject("http://localhost:9003/deliveryassignment/assign", deliveryPartnerAssignmentRequestDto, DeliveryPartnerAssignmentResponseDto.class);
-		return deliveryPartnerAssignmentId; 
+	private DeliveryPartnerAssignmentResponseDto ExecuteDeliveryAssignmentFromOrderedFoodDetails(FoodOrder orderedFood) throws NullPointerException {
+		DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto= deliveryPartnerAssignmentBuilder.buildDeliveryPartnerAssignmentRequestDtoFromFoodOrder(orderedFood);
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignment = restTemplate.postForObject("http://localhost:9003/deliveryassignment/assign", deliveryPartnerAssignmentRequestDto, DeliveryPartnerAssignmentResponseDto.class);
+		if(deliveryPartnerAssignment == null) {
+			throw new NullPointerException();
+		}
+		return deliveryPartnerAssignment; 
 	}
 
 	//fetching Details of User Address from UserManagement Service related logic
@@ -104,9 +109,31 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 			return restaurantAddressResponseDto;
 		}
 
+		private void updateTheDeliveryPartnerCurrentStatus(FoodOrder foodOrder) {
+			long deliveryPartnerId = foodOrder.getDeliveryPartnerId();
+			CurrentStatus deliveryPartnerCurrentStatus = CurrentStatus.ON_DELIVERY;
+			restTemplate.exchange("http://localhost:9003/deliveryPartner/update/currentstatus/"+deliveryPartnerId+"?status="+deliveryPartnerCurrentStatus, HttpMethod.PUT, null, Void.class);
+		}
 		
+		private void updateTheDeliveryPartnerTotalAssignDeliveryCount(long deliveryPartnerId) {
+			restTemplate.exchange("http://localhost:9003/deliveryPartner/update/deliverycount/"+deliveryPartnerId, HttpMethod.PUT, null, Void.class);
+		}
 
-		
+		@Override
+		public void deleteOrderedFood(long orderedFoodId) {
+			FoodOrder foodOrder = foodOrderRepository.findById(orderedFoodId).orElseThrow( () -> new OrderedFoodIdNotFoundException("Invalid Ordered Food ID"));
+			foodOrderRepository.deleteById(foodOrder.getOrderId());
+		}
 
-	
+		@Override
+		public List<FoodOrderResponseDto> orderListOfFoods(List<FoodOrderRequestDto> foodOrderRequestDtoList) throws Exception {
+			List<FoodOrderResponseDto> foodOrderResponseDtoList = new ArrayList<>();
+			
+			for(FoodOrderRequestDto foodOrderRequestDto : foodOrderRequestDtoList) {
+				FoodOrderResponseDto orderFood = orderFood(foodOrderRequestDto);
+				foodOrderResponseDtoList.add(orderFood);
+			}
+			return foodOrderResponseDtoList;
+		}
+
 }

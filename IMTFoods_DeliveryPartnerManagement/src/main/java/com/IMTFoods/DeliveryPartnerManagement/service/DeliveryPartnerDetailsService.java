@@ -6,10 +6,14 @@ import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsRequestD
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsResponseDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsUpdateRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsUpdateResponseDto;
+import com.IMTFoods.DeliveryPartnerManagement.exception.NoDeliveryPartnerAvailableException;
+import com.IMTFoods.DeliveryPartnerManagement.utils.CurrentStatus;
 
 public interface DeliveryPartnerDetailsService {
 
 	DeliveryPartnerDetailsResponseDto signIn(DeliveryPartnerDetailsRequestDto deliveryPartnerDetailsRequestDto);
+
+	List<DeliveryPartnerDetailsResponseDto> signInAll(List<DeliveryPartnerDetailsRequestDto> deliveryPartnerDetailsRequestDtoList);
 
 	DeliveryPartnerDetailsResponseDto getDeliveryPartnerDetailsById(long deliveryPartnerId);
 
@@ -20,7 +24,12 @@ public interface DeliveryPartnerDetailsService {
 	DeliveryPartnerDetailsUpdateResponseDto updateDeliveryPartnerDetailsById(long deliveryPartnerId,
 			DeliveryPartnerDetailsUpdateRequestDto deliveryPartnerDetailsUpdateRequestDto);
 
-	Long getAvailableDeliveryPartnerDetails();
+	DeliveryPartnerDetailsResponseDto getAvailableDeliveryPartnerDetails() throws NoDeliveryPartnerAvailableException;
+
+	void updateDeliveryPartnerCurrentStatus(long deliveryPartnerId, CurrentStatus currentStatus);
+
+	void updateDeliveryPartnerTotalDeliveryCount(long deliveryPartnerId);
+
 	
 	
 }

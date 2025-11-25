@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
-import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
 import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
 
 @RestController
@@ -27,9 +27,15 @@ public class FoodOrderController {
 	}
 	
 	@PostMapping("/foodorder")
-	public ResponseEntity<FoodOrderResponseDto> orderFood(@RequestBody FoodOrderRequestDto foodOrderRequestDto) throws UserAddressAndRestaurantAddressAreNotCloserException{
+	public ResponseEntity<FoodOrderResponseDto> orderFood(@RequestBody FoodOrderRequestDto foodOrderRequestDto) throws Exception{
 		FoodOrderResponseDto orderFood = foodOrderService.orderFood(foodOrderRequestDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(orderFood);
+	}
+	
+	@PostMapping("/foodorder/all")
+	public ResponseEntity<List<FoodOrderResponseDto>> orderListOfFoods(@RequestBody List<FoodOrderRequestDto> foodOrderRequestDtoList) throws Exception{
+		List<FoodOrderResponseDto> listOfFoods = foodOrderService.orderListOfFoods(foodOrderRequestDtoList);
+		return ResponseEntity.status(HttpStatus.CREATED).body(listOfFoods);
 	}
 	
 	@GetMapping("/find/{id}")
@@ -42,6 +48,12 @@ public class FoodOrderController {
 	public ResponseEntity<List<FoodOrderResponseDto>> getAllOrderedFoodDetails(){
 		List<FoodOrderResponseDto> foodOrderResponseDto = foodOrderService.getAllOrderedFoodDetails();
 		return ResponseEntity.status(HttpStatus.FOUND).body(foodOrderResponseDto);
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Void> deleteOrderedFood(@PathVariable("id") long orderedFoodId){
+		foodOrderService.deleteOrderedFood(orderedFoodId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
 }
