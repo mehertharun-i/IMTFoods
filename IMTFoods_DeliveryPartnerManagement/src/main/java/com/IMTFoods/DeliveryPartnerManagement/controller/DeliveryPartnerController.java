@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsResponseDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsUpdateRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerDetailsUpdateResponseDto;
+import com.IMTFoods.DeliveryPartnerManagement.exception.NoDeliveryPartnerAvailableException;
 import com.IMTFoods.DeliveryPartnerManagement.service.DeliveryPartnerDetailsService;
+import com.IMTFoods.DeliveryPartnerManagement.utils.CurrentStatus;
 
 @RestController
 @RequestMapping("/deliveryPartner")
@@ -33,6 +36,12 @@ public class DeliveryPartnerController {
 	public ResponseEntity<DeliveryPartnerDetailsResponseDto> signIn(@RequestBody DeliveryPartnerDetailsRequestDto deliveryPartnerDetailsRequestDto){
 		DeliveryPartnerDetailsResponseDto signIn = deliveryPartnerDetailsService.signIn(deliveryPartnerDetailsRequestDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(signIn);
+	}
+	
+	@PostMapping("/register/all")
+	public ResponseEntity<List<DeliveryPartnerDetailsResponseDto>> signInAll(@RequestBody List<DeliveryPartnerDetailsRequestDto> deliveryPartnerDetailsRequestDtoList){
+		List<DeliveryPartnerDetailsResponseDto> signInAll = deliveryPartnerDetailsService.signInAll(deliveryPartnerDetailsRequestDtoList);
+		return ResponseEntity.status(HttpStatus.CREATED).body(signInAll);
 	}
 	
 	@GetMapping("/{id}")
@@ -60,11 +69,21 @@ public class DeliveryPartnerController {
 	}
 	
 	@GetMapping("/all/available")
-	public ResponseEntity<Long> getAllAvailableDeliveryPartnerDetails(){
-		long availableDeliveryPartnerId = deliveryPartnerDetailsService.getAvailableDeliveryPartnerDetails();
+	public ResponseEntity<DeliveryPartnerDetailsResponseDto> getAllAvailableDeliveryPartnerDetails() throws NoDeliveryPartnerAvailableException{
+		DeliveryPartnerDetailsResponseDto availableDeliveryPartnerId = deliveryPartnerDetailsService.getAvailableDeliveryPartnerDetails();
 		return ResponseEntity.status(HttpStatus.FOUND).body(availableDeliveryPartnerId);
 	}
 	
+	@PutMapping("/update/currentstatus/{id}")
+	public ResponseEntity<Void> updateDeliveryPartnerCurrentStatus(@PathVariable(name = "id") long deliveryPartnerId, @RequestParam(name ="status") CurrentStatus currentStatus){
+		deliveryPartnerDetailsService.updateDeliveryPartnerCurrentStatus(deliveryPartnerId, currentStatus);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
 	
-	
+	@PutMapping("/update/deliverycount/{id}")
+	public ResponseEntity<Void> updateDeliveryPartnerTotalDeliveryCount(@PathVariable("id") long deliveryPartnerId){
+		deliveryPartnerDetailsService.updateDeliveryPartnerTotalDeliveryCount(deliveryPartnerId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+		
 }

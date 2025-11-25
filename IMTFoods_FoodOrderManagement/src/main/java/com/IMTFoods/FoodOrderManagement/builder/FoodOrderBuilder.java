@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.IMTFoods.FoodOrderManagement.dao.FoodOrderRepository;
 import com.IMTFoods.FoodOrderManagement.dao.PaymentStatusRepository;
+import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerDetailsResponseDto;
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.OrderItemsRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.PaymentDetailsRequestDto;
@@ -24,39 +25,38 @@ import com.IMTFoods.FoodOrderManagement.utils.PaymentType;
 public class FoodOrderBuilder {
 	
 	private final RestTemplate restTemplate;
-	
 	private final PaymentStatusRepository paymentStatusRepository;
 	private final FoodOrderRepository foodOrderRepository;
 	
-//	@Autowired
 	public FoodOrderBuilder(RestTemplate restTemplate, PaymentStatusRepository paymentStatusRepository, FoodOrderRepository foodOrderRepository) {
 		this.restTemplate = restTemplate;
 		this.paymentStatusRepository = paymentStatusRepository;
 		this.foodOrderRepository = foodOrderRepository;
 	}
 	
-	
-//	private static double totalPrice = 0;
-	
+	private static final int RANDOM_ID_DIVIDED_BY = 1000000;
 	private FoodOrder foodOrder;
 	
 	private double totalPrice;
 	
 	public FoodOrder buildFoodOrderFromFoodOrderRequestDto(FoodOrderRequestDto foodOrderRequestDto) {
 		
-		 foodOrder = FoodOrder.builder()
+		List<OrderItems> listOfOrderItems = buildListOfOrderItemFromOrderItemRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoorderItems());
+		DeliveryPartnerDetailsResponseDto getDeliveryPartnerId = fetchTheDeliveryPartnerWhoIsAvailable();
+		PaymentDetails paymentDetails = buildPaymentDetailsFromPaymentDetailsRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoPaymentDetails());
+		
+		foodOrder = FoodOrder.builder()
 					.userId(foodOrderRequestDto.getFoodOrderRequestDtoUserId())
 					.userAddressId(foodOrderRequestDto.getFoodOrderRequestDtoUserAddressId())
 					.restaurantId(foodOrderRequestDto.getFoodOrderRequestDtoRestaurantId())
 					.restaurantAddressId(foodOrderRequestDto.getFoodOrderRequestDtoRestaurantAddressId())
-					.deliveryPartnerId(fetchTheDeliveryPartnerWhoIsAvailable()) 
-					.orderItems(buildListOfOrderItemFromOrderItemRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoorderItems()))
+					.deliveryPartnerId(getDeliveryPartnerId.getDeliveryPartnerId()) 
+					.orderItems(listOfOrderItems)
 					.orderTotalPrice(totalPrice)
-					.paymentDetails(buildPaymentDetailsFromPaymentDetailsRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoPaymentDetails()))
+					.paymentDetails(paymentDetails)
 					.build();
 		 
-		foodOrder.setOrderStatus(foodOrder.getPaymentDetails().getPaymentStatus().equals(PaymentStatus.SUCCESSFUL) ? OrderStatus.PREPARING_ORDER : foodOrder.getPaymentDetails().getPaymentStatus().equals(PaymentStatus.FAILED) ? OrderStatus.FAILED : OrderStatus.PENDING);
-		foodOrder.setTrackingId(foodOrder.getOrderStatus().equals(OrderStatus.PREPARING_ORDER) ? generateTrackingId() : 0);
+		linkOrderStatusAndTrackingId(foodOrder, paymentDetails);
 		linkfoodOrderToOrderItem(foodOrder);
 		foodOrder.getPaymentDetails().setFoodOrderId(foodOrder);
 		return foodOrder;
@@ -71,11 +71,21 @@ public class FoodOrderBuilder {
 		}
 	}
 	
+	private void linkOrderStatusAndTrackingId(FoodOrder foodOrder, PaymentDetails paymentDetails) {
+		if(paymentDetails.getPaymentStatus().equals(PaymentStatus.SUCCESSFUL)) {
+			foodOrder.setOrderStatus(OrderStatus.PREPARING_ORDER);
+			foodOrder.setTrackingId(generateTrackingId());
+		}else if(paymentDetails.getPaymentStatus().equals(PaymentStatus.FAILED)) {
+			foodOrder.setOrderStatus(OrderStatus.FAILED);
+		}else {
+			foodOrder.setOrderStatus(OrderStatus.PENDING);
+		}
+	}
 
 
 	//Delivery Partner Id related Logic
-	private long fetchTheDeliveryPartnerWhoIsAvailable() {
-		Long availableDeliveryPartner = restTemplate.getForObject("http://localhost:9003/deliveryPartner/all/available", Long.class);
+	private DeliveryPartnerDetailsResponseDto fetchTheDeliveryPartnerWhoIsAvailable() {
+		DeliveryPartnerDetailsResponseDto availableDeliveryPartner = restTemplate.getForObject("http://localhost:9003/deliveryPartner/all/available", DeliveryPartnerDetailsResponseDto.class);
 		return availableDeliveryPartner;
 	}
 	
@@ -86,19 +96,22 @@ public class FoodOrderBuilder {
 		List<OrderItems> orderItemsList = new ArrayList<>();
 		for(OrderItemsRequestDto orderItemRequestDto : orderItemsRequestDtoList) {
 			OrderItems orderItems = buildOrderItemFromOrderItemRequestDto(orderItemRequestDto);
-			totalPrice += orderItems.getFoodItemPrice();
+			totalPrice += orderItems.getFoodItemPrice()*orderItems.getFoodQuantity();
+			
 			orderItemsList.add(orderItems);
 		}
+		
 		
 		return orderItemsList;
 	}
 
 	public OrderItems buildOrderItemFromOrderItemRequestDto(OrderItemsRequestDto orderItemRequestDto) {
-		
+		long foodItemId = orderItemRequestDto.getOrderItemsRequestDtoRestaurantFoodItemsId();
+		String foodItemName = fetchTheRestaurantFoodItemNameByFoodItemId(foodItemId);
 		
 		OrderItems orderItems = OrderItems.builder()
-					.restaurantFoodItemId(orderItemRequestDto.getOrderItemsRequestDtoRestaurantFoodItemsId())
-					.foodItemName(fetchTheRestaurantFoodItemNameByFoodItemId(orderItemRequestDto.getOrderItemsRequestDtoRestaurantFoodItemsId()))
+					.restaurantFoodItemId(foodItemId)
+					.foodItemName(foodItemName)
 					.foodItemPrice(orderItemRequestDto.getOrderItemsRequestDtoFoodItemPrice())	//try to fit the TotalPrice logic in the parameter by eliminting at Line No.65
 					.foodQuantity(orderItemRequestDto.getOrderItemsRequestDtoQuantity())
 					.build();		
@@ -110,38 +123,30 @@ public class FoodOrderBuilder {
 		String foodItemName = restTemplate.getForObject("http://localhost:9002/restaurantitems/fooditem/name/"+foodItemId, String.class);
 		return foodItemName;
 	}
-	
-//Paymenet Details List related logic
 
-	//	private static List<PaymentDetails> buildListOfPaymentDetailsFromPaymentDetailsRequestDto(List<PaymentDetailsRequestDto> paymentDetailsRequestDtoList) {
-	//		List<PaymentDetails> paymentDetailsList = new ArrayList<>();
-	//		
-	//		for(PaymentDetailsRequestDto paymentDetailsRequestDto : paymentDetailsRequestDtoList) {
-	//			PaymentDetails paymentDetails = buildPaymentDetailsFromPaymentDetailsRequestDto(paymentDetailsRequestDto);
-	//			paymentDetailsList.add(paymentDetails);
-	//			
-	//		}
-	//		return paymentDetailsList;
-	//	}
 
 	public PaymentDetails buildPaymentDetailsFromPaymentDetailsRequestDto(
 			PaymentDetailsRequestDto paymentDetailsRequestDto) {
+		
+		Long transactionId = generateTransactionId();
+				
 		PaymentDetails paymentDetails = PaymentDetails.builder()
 						.orderPaymentActualPrice(paymentDetailsRequestDto.getPaymentDetailsRequestDtoOrderPaymentActualPrice())
 						.discountAmount(paymentDetailsRequestDto.getPaymentDetailsRequestDtoDiscountAmount())
 						.orderPaymentFinalPrice(paymentDetailsRequestDto.getPaymentDetailsRequestDtoOrderPaymentFinalPrice())
 						.paymentType(paymentDetailsRequestDto.getPaymentDetailsRequestDtoPaymentType())
 						.paymentStatus(paymentDetailsRequestDto.getPaymentDetailsRequestDtoPaymentType().equals(PaymentType.CASH_ON_DELIVERY)? PaymentStatus.PENDING: PaymentStatus.SUCCESSFUL)
-						.paymentTransactionId(generateTransactionId())
+						.paymentTransactionId(transactionId != null ? transactionId : 0L)
 						.build();	
 		return paymentDetails;
 	}
 	
 	private long generateTransactionId() {
+
 		SecureRandom secureRandom = new SecureRandom();
 		
 		Long randomId = secureRandom.nextLong();
-		randomId = Math.abs(randomId)/1000000;
+		randomId = Math.abs(randomId)/RANDOM_ID_DIVIDED_BY;
 		Optional<PaymentDetails> paymentDetails = paymentStatusRepository.findByPaymentTransactionId(randomId);
 		if(paymentDetails.isPresent()) {
 			return generateTransactionId();
@@ -156,7 +161,7 @@ public class FoodOrderBuilder {
 		SecureRandom secureRandom = new SecureRandom();
 		
 		Long randomId = secureRandom.nextLong();
-		randomId = Math.abs(randomId)/1000000;
+		randomId = Math.abs(randomId)/RANDOM_ID_DIVIDED_BY;
 		Optional<FoodOrder> foodOrder = foodOrderRepository.findByTrackingId(randomId); 
 		if(foodOrder.isPresent()) {
 			return generateTrackingId();

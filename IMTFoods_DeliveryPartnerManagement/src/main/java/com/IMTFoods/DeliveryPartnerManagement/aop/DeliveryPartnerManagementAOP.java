@@ -20,12 +20,10 @@ public class DeliveryPartnerManagementAOP {
 		log.debug("Entered into "+joinPoint.getSignature()+" method with a Exception Class of ("+joinPoint.getClass().getSimpleName()+") : {}",exceptionMessage.getMessage());
 	}
 	
-	
 	@AfterThrowing(pointcut = "execution(* com.IMTFoods.DeliveryPartnerManagement.*.*.*(..)", throwing = "exceptionMessage")
 	public void DeliveryPartnerExceptionLogger(JoinPoint joinPoint, Exception exceptionMessage) {
 		log.debug("Exception occured at "+joinPoint.getSignature()+" , Exception "+joinPoint.getClass().getSimpleName()+" : {}",exceptionMessage.getMessage());
 	}
-	
 	
 	@Around("execution(* com.IMTFoods.DeliveryPartnerManagement.*.*.*(..))"+" && !within(com.IMTFoods.DeliveryPartnerManagement.exception.*)"+" && args(request, ..)")
 	public Object DeliveryPartnerAroundLogger(ProceedingJoinPoint proceedingJoinPoint, Object request) throws Throwable {

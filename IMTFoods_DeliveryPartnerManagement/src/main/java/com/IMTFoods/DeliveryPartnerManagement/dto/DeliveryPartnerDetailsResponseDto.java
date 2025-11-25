@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class DeliveryPartnerDetailsResponseDto {
+	
+	private long deliveryPartnerId;
 
 	private String deliveryPartnerNameResponseDto;
 	

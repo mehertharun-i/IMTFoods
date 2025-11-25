@@ -1,5 +1,8 @@
 package com.IMTFoods.DeliveryPartnerManagement.service.implementation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.IMTFoods.DeliveryPartnerManagement.builder.DeliveryPartnerAssignmentBuilder;
@@ -19,21 +22,24 @@ public class DeliveryPartnerAssignmentServiceImplementation implements DeliveryP
 
 	private final DeliveryAssignmentRepository deliveryAssignmentRepository;
 	private final DeliveryPartnerRepository deliveryPartnerRepository;
+	private final DeliveryPartnerAssignmentResponseBuilder deliveryPartnerAssignmentResponseBuilder;
 	
-	public DeliveryPartnerAssignmentServiceImplementation(DeliveryAssignmentRepository deliveryAssignmentRepository, DeliveryPartnerRepository deliveryPartnerRepository) {
+	public DeliveryPartnerAssignmentServiceImplementation(DeliveryAssignmentRepository deliveryAssignmentRepository, DeliveryPartnerRepository deliveryPartnerRepository, DeliveryPartnerAssignmentResponseBuilder deliveryPartnerAssignmentResponseBuilder) {
 		this.deliveryAssignmentRepository = deliveryAssignmentRepository;
 		this.deliveryPartnerRepository = deliveryPartnerRepository;
+		this.deliveryPartnerAssignmentResponseBuilder = deliveryPartnerAssignmentResponseBuilder;
 	}
 
 	@Override
-	public DeliveryPartnerAssignmentResponseDto createDeliveryAssignmnet(
+	public DeliveryPartnerAssignmentResponseDto createDeliveryAssignment(
 			DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto) {
 		
 		DeliveryPartnerAssignments deliveryPartnerAssignment = DeliveryPartnerAssignmentBuilder.buildDeliveryPartnerAssignmentFromDeliveryPartnerAssignmentRequestDto(deliveryPartnerAssignmentRequestDto);
+		
 		DeliveryPartnerDetails deliveryPartnerDetails = deliveryPartnerRepository.findById(deliveryPartnerAssignmentRequestDto.getDeliveryPartnerAssignmentRequestDtoDeliveryPartnerId()).orElseThrow( () -> new DeliveryPartnerIdNotFoundException("Invalid Delivery Partner Id"));
 		deliveryPartnerAssignment.setDeliveryPartnerId(deliveryPartnerDetails);
 		DeliveryPartnerAssignments savedDeliveryAssignment = deliveryAssignmentRepository.save(deliveryPartnerAssignment);
-		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = DeliveryPartnerAssignmentResponseBuilder.buildDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(savedDeliveryAssignment);
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = deliveryPartnerAssignmentResponseBuilder.buildDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(savedDeliveryAssignment);
 
 		return deliveryPartnerAssignmentResponseDto;
 	}
@@ -41,9 +47,29 @@ public class DeliveryPartnerAssignmentServiceImplementation implements DeliveryP
 	@Override
 	public DeliveryPartnerAssignmentResponseDto getDeliveryPartnerAssignmentById(long deliveryAssignmentId) {
 		DeliveryPartnerAssignments deliveryPartnerAssignments = deliveryAssignmentRepository.findById(deliveryAssignmentId).orElseThrow( () -> new DeliveryAssignmentIdNotFoundException("Invalid Delivery Assignment Id"));
-		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = DeliveryPartnerAssignmentResponseBuilder.buildDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(deliveryPartnerAssignments);
+		DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = deliveryPartnerAssignmentResponseBuilder.buildDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(deliveryPartnerAssignments);
 		
 		return deliveryPartnerAssignmentResponseDto;
+	}
+
+	@Override
+	public List<DeliveryPartnerAssignmentResponseDto> getAllDeliveryPartnerAssignment() {
+		List<DeliveryPartnerAssignments> listOfDeliveryPartnerAssignmnents = deliveryAssignmentRepository.findAll();
+		List<DeliveryPartnerAssignmentResponseDto> listOfDeliveryPartnerAssignmentResponseDto = deliveryPartnerAssignmentResponseBuilder.buildListOfDeliveryPartnerAssignmentResponseDtoFromDeliveryPartnerAssignment(listOfDeliveryPartnerAssignmnents);
+		
+		return listOfDeliveryPartnerAssignmentResponseDto;
+	}
+
+	@Override
+	public List<DeliveryPartnerAssignmentResponseDto> createAllDeliveryAssignment(
+			List<DeliveryPartnerAssignmentRequestDto> deliveryPartnerAssignmentRequestDtoList) {
+		
+		List<DeliveryPartnerAssignmentResponseDto> deliveryPartnerAssignmentResponseDtoList = new ArrayList<>();
+		for(DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto : deliveryPartnerAssignmentRequestDtoList) {
+			DeliveryPartnerAssignmentResponseDto deliveryPartnerAssignmentResponseDto = createDeliveryAssignment(deliveryPartnerAssignmentRequestDto);
+			deliveryPartnerAssignmentResponseDtoList.add(deliveryPartnerAssignmentResponseDto);
+		}
+		return deliveryPartnerAssignmentResponseDtoList;
 	}
 	
 	

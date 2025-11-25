@@ -1,12 +1,18 @@
 package com.IMTFoods.DeliveryPartnerManagement.service;
 
+import java.util.List;
+
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAssignmentRequestDto;
 import com.IMTFoods.DeliveryPartnerManagement.dto.DeliveryPartnerAssignmentResponseDto;
 
 public interface DeliveryPartnerAssignmentService {
 
-	DeliveryPartnerAssignmentResponseDto createDeliveryAssignmnet(DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto);
+	DeliveryPartnerAssignmentResponseDto createDeliveryAssignment(DeliveryPartnerAssignmentRequestDto deliveryPartnerAssignmentRequestDto);
 
 	DeliveryPartnerAssignmentResponseDto getDeliveryPartnerAssignmentById(long deliveryAssignmentId);
+
+	List<DeliveryPartnerAssignmentResponseDto> getAllDeliveryPartnerAssignment();
+
+	List<DeliveryPartnerAssignmentResponseDto> createAllDeliveryAssignment(List<DeliveryPartnerAssignmentRequestDto> deliveryPartnerAssignmentRequestDto);
 
 }
