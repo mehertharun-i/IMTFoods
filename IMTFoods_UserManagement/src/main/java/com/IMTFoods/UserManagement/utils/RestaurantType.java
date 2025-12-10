@@ -1,4 +1,4 @@
-package com.IMTFoods.RestaurantManagement.utils;
+package com.IMTFoods.UserManagement.utils;
 
 public enum RestaurantType {
 	

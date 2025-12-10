@@ -2,6 +2,7 @@ package com.IMTFoods.RestaurantManagement.model;
 
 import com.IMTFoods.RestaurantManagement.utils.ItemCategory;
 import com.IMTFoods.RestaurantManagement.utils.ItemType;
+import com.IMTFoods.RestaurantManagement.utils.ItemsAvailableStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,6 +44,9 @@ public class RestaurantItems {
 	
 	@Enumerated(EnumType.STRING)
 	private ItemType itemType;
+	
+	@Enumerated(EnumType.STRING)
+	private ItemsAvailableStatus foodItemAvailableStatus;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "restaurant_details_id", nullable = false)

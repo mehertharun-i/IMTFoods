@@ -3,7 +3,6 @@ package com.IMTFoods.RestaurantManagement.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.IMTFoods.RestaurantManagement.builder.ListOfRestaurantDetailsResponseBuilder;
@@ -19,6 +18,7 @@ import com.IMTFoods.RestaurantManagement.model.RestaurantAddress;
 import com.IMTFoods.RestaurantManagement.model.RestaurantDetails;
 import com.IMTFoods.RestaurantManagement.model.RestaurantItems;
 import com.IMTFoods.RestaurantManagement.service.RestaurantDetailsService;
+import com.IMTFoods.RestaurantManagement.utils.RestaurantStatus;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,7 @@ public class RestaurantDetailsServiceImplementation implements RestaurantDetails
 	}
 	
 	@Override
-	public ResponseEntity<RestaurantDetailsResponseDto> registerRestaurantDetails(RestaurantDetailsRequestDto restaurantDetailsRequestDto) {
+	public RestaurantDetailsResponseDto registerRestaurantDetails(RestaurantDetailsRequestDto restaurantDetailsRequestDto) {
 
 		RestaurantDetails restaurantDetails = RestaurantDetailsBuilder.buildRestaurantDetailsFromRestaurantDetailsRequestDto(restaurantDetailsRequestDto);
 		
@@ -41,41 +41,38 @@ public class RestaurantDetailsServiceImplementation implements RestaurantDetails
 		
 		RestaurantDetailsResponseDto restaurantDetailsResponseDto = RestaurantDetailsResponseBuilder.buildRestaurantDetailsFromRestaurantDetailsResponseDto(savedRestaurantDetails);
 		
-		return ResponseEntity.ok(restaurantDetailsResponseDto);
+		return restaurantDetailsResponseDto;
 	}
 
 	@Override
-	public ResponseEntity<RestaurantDetailsResponseDto> getRestaurantDetailsById(long restaurantId) {
+	public RestaurantDetailsResponseDto getRestaurantDetailsById(long restaurantId) {
 		
 		RestaurantDetails restaurantDetails = restaurantDetailsRepository.findById(restaurantId).orElseThrow( () -> new RestaurantDetailsNotFoundException("Invalid Restaurant Details"));
 		
 		RestaurantDetailsResponseDto restaurantDetailsResponseDto = RestaurantDetailsResponseBuilder.buildRestaurantDetailsFromRestaurantDetailsResponseDto(restaurantDetails);
 		
-		return ResponseEntity.ok(restaurantDetailsResponseDto);
+		return restaurantDetailsResponseDto;
 	}
 
 	@Override
-	public ResponseEntity<List<RestaurantDetailsResponseDto>> getAllRestaurantDetails() {
+	public List<RestaurantDetailsResponseDto> getAllRestaurantDetails() {
 		
 		List<RestaurantDetails> allRestaurantDetails = restaurantDetailsRepository.findAll();
 		
 		List<RestaurantDetailsResponseDto> listOfRestaurantDetailsResponseBuilder = ListOfRestaurantDetailsResponseBuilder.buildListOfRestaurantDetailsResponseBuilder(allRestaurantDetails);
 		
-		return ResponseEntity.ok(listOfRestaurantDetailsResponseBuilder);
+		return listOfRestaurantDetailsResponseBuilder;
 	}
 
 	@Override
-	public ResponseEntity<Void> deleteRestaurantById(long restaurantId) {
+	public void deleteRestaurantById(long restaurantId) {
 		
 		RestaurantDetails restaurantDetails = restaurantDetailsRepository.findById(restaurantId).orElseThrow( () -> new RestaurantDetailsNotFoundException("Invalid Restaurant Details"));
-				
 		restaurantDetailsRepository.deleteById(restaurantDetails.getRestaurantId());
-		
-		return ResponseEntity.noContent().build();
 	}
 
 	@Override
-	public ResponseEntity<RestaurantDetailsResponseDto> updateRestaurantDetailsById(long restaurantId, RestaurantDetailsRequestDto restaurantDetailsRequestDto) {
+	public RestaurantDetailsResponseDto updateRestaurantDetailsById(long restaurantId, RestaurantDetailsRequestDto restaurantDetailsRequestDto) {
 		
 		RestaurantDetails restaurantDetails = restaurantDetailsRepository.findById(restaurantId).orElseThrow( () -> new RestaurantDetailsNotFoundException("Invalid Restaurant Details"));
 		restaurantDetails.setRestaurantName(restaurantDetailsRequestDto.getRestaurantNameRequestDto());
@@ -136,7 +133,17 @@ public class RestaurantDetailsServiceImplementation implements RestaurantDetails
 		
 		RestaurantDetailsResponseDto restaurantDetailsResponseDto = RestaurantDetailsResponseBuilder.buildRestaurantDetailsFromRestaurantDetailsResponseDto(updatedRestaurantDetails);
 		
-		return ResponseEntity.ok(restaurantDetailsResponseDto);
+		return restaurantDetailsResponseDto;
+	}
+
+	@Override
+	public String updateRestaurantStatusById(long restaurantDetailsId, RestaurantStatus restaurantStatus) {
+		
+		RestaurantDetails restaurantDetails = restaurantDetailsRepository.findById(restaurantDetailsId).orElseThrow( () -> new RestaurantDetailsNotFoundException("Invalid Restaurant Details Id"));
+		restaurantDetails.setRestaurantStatus(restaurantStatus);
+		RestaurantDetails savedRestaurantDetails = restaurantDetailsRepository.save(restaurantDetails);
+		return savedRestaurantDetails.getRestaurantStatus().
+				toString();
 	}
 
 }

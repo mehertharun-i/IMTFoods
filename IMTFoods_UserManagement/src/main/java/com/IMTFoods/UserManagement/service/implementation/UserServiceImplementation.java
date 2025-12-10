@@ -21,16 +21,18 @@ import com.IMTFoods.UserManagement.exception.UserIdNotFoundException;
 import com.IMTFoods.UserManagement.model.Authorities;
 import com.IMTFoods.UserManagement.model.UserAddressInformation;
 import com.IMTFoods.UserManagement.model.UserInformation;
-import com.IMTFoods.UserManagement.service.UserService;
+import com.IMTFoods.UserManagement.service.UserInformationService;
 
 @Service
-public class UserServiceImplementation implements UserService{
+public class UserServiceImplementation implements UserInformationService{
 	
 	private final UserRepository userRepository;
+	
 	
 	public UserServiceImplementation(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
+
 
 	@Override
 	public ResponseEntity<UserInformationResponseDto> signInUser(UserInformationRequestDto userInformationRequestDto) {

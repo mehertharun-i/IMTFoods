@@ -3,6 +3,7 @@ package com.IMTFoods.DeliveryPartnerManagement.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,10 +17,10 @@ import com.IMTFoods.DeliveryPartnerManagement.model.DeliveryPartnerAssignments;
 @Component
 public class DeliveryPartnerAssignmentResponseBuilder {
 	
-	private final RestTemplate restTemplate;
+	private final RestTemplate loadRestTemplate;
 	
-	public DeliveryPartnerAssignmentResponseBuilder(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
+	public DeliveryPartnerAssignmentResponseBuilder(@Qualifier("loadRestTemplate") RestTemplate loadRestTemplate) {
+		this.loadRestTemplate = loadRestTemplate;
 	}
 	
 	
@@ -56,23 +57,23 @@ public class DeliveryPartnerAssignmentResponseBuilder {
 	}
 	
 	private UserInformationResponseDto fetchUserInformationResponseDtoFromUserManagement(long userId) {
-		UserInformationResponseDto userInformationResponseDto = restTemplate.getForObject("http://localhost:9001/user/"+userId, UserInformationResponseDto.class);
+		UserInformationResponseDto userInformationResponseDto = loadRestTemplate.getForObject("http://IMTFoods-UserManagement/user/"+userId, UserInformationResponseDto.class);
 		return userInformationResponseDto;
 	}
 	
 	
 	private UserAddressInformationResponseDto fetchUserAddressInformationResponseDtoFromUserManagement(long userAddressId) {
-		UserAddressInformationResponseDto userAddressInformationResponseDto = restTemplate.getForObject("http://localhost:9001/user/address/find/"+userAddressId, UserAddressInformationResponseDto.class);
+		UserAddressInformationResponseDto userAddressInformationResponseDto = loadRestTemplate.getForObject("http://IMTFoods-UserManagement/address/find/"+userAddressId, UserAddressInformationResponseDto.class);
 		return userAddressInformationResponseDto;
 	}
 	
 	private RestaurantDetailsResponseDto fetchRestaurantDetailsResponseDtoFromRestaurantManagement(long restaurantId) {
-		RestaurantDetailsResponseDto restaurantDetailsResponseDto = restTemplate.getForObject("http://localhost:9002/restaurant/"+restaurantId, RestaurantDetailsResponseDto.class);
+		RestaurantDetailsResponseDto restaurantDetailsResponseDto = loadRestTemplate.getForObject("http://IMTFoods-RestaurantManagement/restaurant/"+restaurantId, RestaurantDetailsResponseDto.class);
 		return restaurantDetailsResponseDto;
 	}
 	
 	private RestaurantAddressResponseDto fetchRestaurantAddressResponseDtoFromRestaurantManagement(long restaurantAddressId) {
-		RestaurantAddressResponseDto restaurantAddressResponseDto = restTemplate.getForObject("http://localhost:9002/restaurant/address/find/"+restaurantAddressId, RestaurantAddressResponseDto.class);
+		RestaurantAddressResponseDto restaurantAddressResponseDto = loadRestTemplate.getForObject("http://IMTFoods-RestaurantManagement/restaurant/address/find/"+restaurantAddressId, RestaurantAddressResponseDto.class);
 		return restaurantAddressResponseDto;
 	}
 

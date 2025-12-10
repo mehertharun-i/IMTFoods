@@ -1,6 +1,7 @@
 package com.IMTFoods.UserManagement.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.IMTFoods.UserManagement.utils.Gender;
@@ -62,19 +63,25 @@ public class UserInformation {
 	@ToString.Exclude
 	private List<UserAddressInformation> userAddressInformation; 
 	
-	
 	@Column(nullable = false)
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "user_authorities", joinColumns = {@JoinColumn(name="userId")}, inverseJoinColumns = {@JoinColumn(name="authoritiesId")})
 	@ToString.Exclude
 	private List<Authorities> roles;
 	
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userInformationId")
+	@ToString.Exclude
+	@Builder.Default
+	private List<FavouriteRestaurant> favouriteRestaurant = new ArrayList<>();
+	
 	private List<Long> userOrdersDetials;
 	
 	private List<Integer> userSavedPayementDetails;
 
 	public UserInformation(String userFirstName, String userLastName, LocalDate userDateOfBirth, Gender gender,
-			String userEmail, String userPassword, String userPhoneNumber, List<Long> userOrdersDetials, List<UserAddressInformation> userAddressInformation,
+			String userEmail, String userPassword, String userPhoneNumber, boolean isAccountDeleted,
+			List<UserAddressInformation> userAddressInformation, List<Authorities> roles,
+			List<FavouriteRestaurant> favouriteRestaurant, List<Long> userOrdersDetials,
 			List<Integer> userSavedPayementDetails) {
 		super();
 		this.userFirstName = userFirstName;
@@ -84,9 +91,12 @@ public class UserInformation {
 		this.userEmail = userEmail;
 		this.userPassword = userPassword;
 		this.userPhoneNumber = userPhoneNumber;
+		this.isAccountDeleted = isAccountDeleted;
+		this.userAddressInformation = userAddressInformation;
+		this.roles = roles;
+		this.favouriteRestaurant = favouriteRestaurant;
 		this.userOrdersDetials = userOrdersDetials;
 		this.userSavedPayementDetails = userSavedPayementDetails;
-		this.userAddressInformation = userAddressInformation;
 	}
 	
 	

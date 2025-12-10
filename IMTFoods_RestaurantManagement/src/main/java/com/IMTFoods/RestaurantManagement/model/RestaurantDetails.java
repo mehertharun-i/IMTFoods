@@ -3,6 +3,7 @@ package com.IMTFoods.RestaurantManagement.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.IMTFoods.RestaurantManagement.utils.RestaurantStatus;
 import com.IMTFoods.RestaurantManagement.utils.RestaurantType;
 
 import jakarta.persistence.CascadeType;
@@ -50,6 +51,10 @@ public class RestaurantDetails {
 	
 	@Column(nullable = false)
 	private boolean isRestaurantOpened;
+	
+//	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private RestaurantStatus restaurantStatus;
 	
 	@Builder.Default
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "restaurantDetailsId", orphanRemoval = true)

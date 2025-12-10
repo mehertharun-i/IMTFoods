@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.IMTFoods</groupId>
-	<artifactId>IMTFoods_UserManagement</artifactId>
+	<artifactId>IMTFoods-UserManagement</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>IMTFoods_UserManagement</name>
+	<name>IMTFoods-UserManagement</name>
 	<description>User Management - User Related All details are stored in this project</description>
 	<url/>
 	<licenses>
@@ -72,6 +72,10 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 	</dependencies>
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,13 +26,15 @@ import com.IMTFoods.FoodOrderManagement.utils.PaymentType;
 public class FoodOrderBuilder {
 	
 	private final RestTemplate restTemplate;
+	private final RestTemplate loadRestTemplate;
 	private final PaymentStatusRepository paymentStatusRepository;
 	private final FoodOrderRepository foodOrderRepository;
 	
-	public FoodOrderBuilder(RestTemplate restTemplate, PaymentStatusRepository paymentStatusRepository, FoodOrderRepository foodOrderRepository) {
+	public FoodOrderBuilder(@Qualifier("restTemplate") RestTemplate restTemplate, @Qualifier("loadRestTemplate") RestTemplate loadRestTemplate, PaymentStatusRepository paymentStatusRepository, FoodOrderRepository foodOrderRepository) {
 		this.restTemplate = restTemplate;
 		this.paymentStatusRepository = paymentStatusRepository;
 		this.foodOrderRepository = foodOrderRepository;
+		this.loadRestTemplate = loadRestTemplate;
 	}
 	
 	private static final int RANDOM_ID_DIVIDED_BY = 1000000;
@@ -120,7 +123,7 @@ public class FoodOrderBuilder {
 
 	
 	private String fetchTheRestaurantFoodItemNameByFoodItemId(long foodItemId) {
-		String foodItemName = restTemplate.getForObject("http://localhost:9002/restaurantitems/fooditem/name/"+foodItemId, String.class);
+		String foodItemName = loadRestTemplate.getForObject("http://IMTFoods-RestaurantManagement/restaurantitems/fooditem/name/"+foodItemId, String.class);
 		return foodItemName;
 	}
 
