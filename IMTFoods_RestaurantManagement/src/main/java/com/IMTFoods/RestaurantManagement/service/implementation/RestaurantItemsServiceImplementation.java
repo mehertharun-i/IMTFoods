@@ -8,6 +8,7 @@ import com.IMTFoods.RestaurantManagement.dto.RestaurantItemsResponseDto;
 import com.IMTFoods.RestaurantManagement.exception.FoodItemIdNotFoundException;
 import com.IMTFoods.RestaurantManagement.model.RestaurantItems;
 import com.IMTFoods.RestaurantManagement.service.RestaurantItemsService;
+import com.IMTFoods.RestaurantManagement.utils.ItemsAvailableStatus;
 
 @Service
 public class RestaurantItemsServiceImplementation implements RestaurantItemsService {
@@ -25,6 +26,15 @@ public class RestaurantItemsServiceImplementation implements RestaurantItemsServ
 		RestaurantItemsResponseDto foodItemsResponseDto = RestaurantDetailsResponseBuilder.buildRestaurantItemsResponseDtoFromRestaurantDetails(foodItemDetails);
 		
 		return foodItemsResponseDto;
+	}
+
+	@Override
+	public ItemsAvailableStatus updateFoodItemsAvailablility(long foodItemId, ItemsAvailableStatus availableStatus) {
+		
+		RestaurantItems restaurantItems = restaurantItemsRepository.findById(foodItemId).orElseThrow( () -> new FoodItemIdNotFoundException("Invalid Food Item Id"));
+		restaurantItems.setFoodItemAvailableStatus(availableStatus);
+		RestaurantItems updatedFoodItemStatus = restaurantItemsRepository.save(restaurantItems);
+		return updatedFoodItemStatus.getFoodItemAvailableStatus();
 	}
 
 }

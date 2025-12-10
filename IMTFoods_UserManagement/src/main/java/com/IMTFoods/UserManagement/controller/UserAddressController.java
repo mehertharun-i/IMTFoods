@@ -11,7 +11,7 @@ import com.IMTFoods.UserManagement.dto.UserAddressInformationResponseDto;
 import com.IMTFoods.UserManagement.service.UserAddressService;
 
 @RestController
-@RequestMapping("/user/address")
+@RequestMapping("/address")
 public class UserAddressController {
 
 	private final UserAddressService userAddressService;

@@ -2,22 +2,23 @@ package com.IMTFoods.RestaurantManagement.service;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
 import com.IMTFoods.RestaurantManagement.dto.RestaurantDetailsRequestDto;
 import com.IMTFoods.RestaurantManagement.dto.RestaurantDetailsResponseDto;
+import com.IMTFoods.RestaurantManagement.utils.RestaurantStatus;
 
 public interface RestaurantDetailsService {
 
-	ResponseEntity<RestaurantDetailsResponseDto> registerRestaurantDetails(RestaurantDetailsRequestDto restaurantDetailsRequestDto);
+	RestaurantDetailsResponseDto registerRestaurantDetails(RestaurantDetailsRequestDto restaurantDetailsRequestDto);
 
-	ResponseEntity<RestaurantDetailsResponseDto> getRestaurantDetailsById(long restaurantId);
+	RestaurantDetailsResponseDto getRestaurantDetailsById(long restaurantId);
 
-	ResponseEntity<List<RestaurantDetailsResponseDto>> getAllRestaurantDetails();
+	List<RestaurantDetailsResponseDto> getAllRestaurantDetails();
 
-	ResponseEntity<Void> deleteRestaurantById(long restaurantId);
+	void deleteRestaurantById(long restaurantId);
 
-	ResponseEntity<RestaurantDetailsResponseDto> updateRestaurantDetailsById(long restaurantId, RestaurantDetailsRequestDto restaurantDetailsRequestDto);
+	RestaurantDetailsResponseDto updateRestaurantDetailsById(long restaurantId, RestaurantDetailsRequestDto restaurantDetailsRequestDto);
+
+	String updateRestaurantStatusById(long restaurantDetailsId, RestaurantStatus restaurantStatus);
 	
 	
 }

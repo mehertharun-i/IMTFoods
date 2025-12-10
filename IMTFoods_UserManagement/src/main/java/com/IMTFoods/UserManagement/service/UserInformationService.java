@@ -9,7 +9,7 @@ import com.IMTFoods.UserManagement.dto.UserInformationRequestDto;
 import com.IMTFoods.UserManagement.dto.UserInformationResponseDto;
 import com.IMTFoods.UserManagement.exception.NoContentFoundException;
 
-public interface UserService {
+public interface UserInformationService {
 
 	ResponseEntity<UserInformationResponseDto> signInUser(UserInformationRequestDto userInformationRequestDto);
 

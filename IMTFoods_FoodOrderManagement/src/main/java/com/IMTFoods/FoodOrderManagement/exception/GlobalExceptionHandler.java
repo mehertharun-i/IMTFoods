@@ -17,5 +17,15 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleOrderedFoodIdNotFoundException(OrderedFoodIdNotFoundException exceptionMessage){
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
 	}
+	
+	@ExceptionHandler(OrderItemsIdNotFoundException.class)
+	public ResponseEntity<String> handleOrderItemsIdNotFoundException(OrderItemsIdNotFoundException exceptionMessage){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
+	}
+	
+	@ExceptionHandler(PaymentDetailsIdNotFoundException.class)
+	public ResponseEntity<String> handlePaymentDetailsIdNotFoundException(PaymentDetailsIdNotFoundException exceptionMessage){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
+	}
 
 }
