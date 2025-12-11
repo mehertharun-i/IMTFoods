@@ -38,7 +38,7 @@ public class RestaurantDetailsController {
 	@GetMapping("/{id}")
 	public ResponseEntity<RestaurantDetailsResponseDto> getRestaurantDetailsById(@PathVariable("id") long restaurantId){
 		RestaurantDetailsResponseDto restaurantDetailsById = restaurantDetailsService.getRestaurantDetailsById(restaurantId);
-		return ResponseEntity.status(HttpStatus.FOUND).body(restaurantDetailsById);
+		return ResponseEntity.status(HttpStatus.OK).body(restaurantDetailsById);
 	}
 	
 	@GetMapping

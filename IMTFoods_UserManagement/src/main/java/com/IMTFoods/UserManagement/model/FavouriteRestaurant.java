@@ -3,6 +3,9 @@ package com.IMTFoods.UserManagement.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -19,7 +22,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FavouriteRestaurant {
 	
-	private long favouriteFoodItemsId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long favouriteRestaurantId;
 	
 	@Column(nullable = false)
 	private long restaurantId;
@@ -27,13 +32,13 @@ public class FavouriteRestaurant {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="user_information_id", nullable = false)
-	private long userInformationId;
+	private UserInformation userInformationId;
 	
 	@Column(nullable = false)
 	@Builder.Default
 	private boolean isFavourite = false;
 
-	public FavouriteRestaurant(long restaurantId, long userInformationId) {
+	public FavouriteRestaurant(long restaurantId, UserInformation userInformationId) {
 		super();
 		this.restaurantId = restaurantId;
 		this.userInformationId = userInformationId;

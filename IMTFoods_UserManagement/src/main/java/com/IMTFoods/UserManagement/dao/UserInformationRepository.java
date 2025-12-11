@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.IMTFoods.UserManagement.model.UserInformation;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserInformation, Long> {
+public interface UserInformationRepository extends JpaRepository<UserInformation, Long> {
 
 	
 }

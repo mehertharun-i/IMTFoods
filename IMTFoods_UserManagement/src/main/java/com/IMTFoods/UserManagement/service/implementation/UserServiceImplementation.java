@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.IMTFoods.UserManagement.builder.UserInformationBuilder;
 import com.IMTFoods.UserManagement.builder.UserInformationResponseDtoBuilder;
 import com.IMTFoods.UserManagement.builder.UserInformationResponseDtoListBuilder;
-import com.IMTFoods.UserManagement.dao.UserRepository;
+import com.IMTFoods.UserManagement.dao.UserInformationRepository;
 import com.IMTFoods.UserManagement.dto.AuthoritiesRequestDto;
 import com.IMTFoods.UserManagement.dto.UpdateUserInformationRequestDto;
 import com.IMTFoods.UserManagement.dto.UserAddressInformationRequestDto;
@@ -26,18 +26,18 @@ import com.IMTFoods.UserManagement.service.UserInformationService;
 @Service
 public class UserServiceImplementation implements UserInformationService{
 	
-	private final UserRepository userRepository;
+	private final UserInformationRepository userInformationRepository;
 	
 	
-	public UserServiceImplementation(UserRepository userRepository) {
-		this.userRepository = userRepository;
+	public UserServiceImplementation(UserInformationRepository userInformationRepository) {
+		this.userInformationRepository = userInformationRepository;
 	}
 
 
 	@Override
 	public ResponseEntity<UserInformationResponseDto> signInUser(UserInformationRequestDto userInformationRequestDto) {
 		UserInformation userInformation = UserInformationBuilder.buildUserInformationFromUserInformationRequestDto(userInformationRequestDto);
-		UserInformation savedUserInformation = userRepository.save(userInformation);
+		UserInformation savedUserInformation = userInformationRepository.save(userInformation);
 		UserInformationResponseDto userInformationResponseDto = UserInformationResponseDtoBuilder.buildUserInformationResponseDtoFromUserInformation(savedUserInformation);
 		return ResponseEntity.status(HttpStatus.OK).body(userInformationResponseDto);
 		
@@ -45,7 +45,7 @@ public class UserServiceImplementation implements UserInformationService{
 
 	@Override
 	public ResponseEntity<UserInformationResponseDto> getUserById(Long userId) {
-		UserInformation userInformation = userRepository.findById(userId).orElseThrow( () -> new UserIdNotFoundException("Invalid User Id"));
+		UserInformation userInformation = userInformationRepository.findById(userId).orElseThrow( () -> new UserIdNotFoundException("Invalid User Id"));
 		UserInformationResponseDto userInformationResponseDto = UserInformationResponseDtoBuilder.buildUserInformationResponseDtoFromUserInformation(userInformation);
 		return ResponseEntity.status(HttpStatus.OK).body(userInformationResponseDto);
 		
@@ -54,7 +54,7 @@ public class UserServiceImplementation implements UserInformationService{
 
 	@Override
 	public ResponseEntity<List<UserInformationResponseDto>> getAllUsers() throws NoContentFoundException {
-		List<UserInformation> allUserList = userRepository.findAll();
+		List<UserInformation> allUserList = userInformationRepository.findAll();
 		if(allUserList.isEmpty()) {
 			 throw new NoContentFoundException("Not Data Available");
 		}else {
@@ -65,11 +65,11 @@ public class UserServiceImplementation implements UserInformationService{
 
 	@Override
 	public ResponseEntity<UserInformationResponseDto> updateUserDetails(UpdateUserInformationRequestDto updateUserInformationRequestDto, long userId){
-		UserInformation userInformation = userRepository.findById(userId).orElseThrow( () -> new UserIdNotFoundException("Invalid UserId for update Operation"));
+		UserInformation userInformation = userInformationRepository.findById(userId).orElseThrow( () -> new UserIdNotFoundException("Invalid UserId for update Operation"));
 		
 		updateUserInformationFromUpdateUserInforamtionRequestDto(updateUserInformationRequestDto, userInformation);
 		
-		UserInformation updatedUserInformation = userRepository.save(userInformation);
+		UserInformation updatedUserInformation = userInformationRepository.save(userInformation);
 		
 		UserInformationResponseDto userInformationResponseDto = UserInformationResponseDtoBuilder.buildUserInformationResponseDtoFromUserInformation(updatedUserInformation);
 				
@@ -80,8 +80,8 @@ public class UserServiceImplementation implements UserInformationService{
 
 	@Override
 	public ResponseEntity<String> deleteUserInformationById(long userId) {
-		UserInformation userInformation = userRepository.findById(userId).orElseThrow( () -> new UserIdNotFoundException("Invalid User Id for Delete Operation"));
-		userRepository.deleteById(userInformation.getUserId());
+		UserInformation userInformation = userInformationRepository.findById(userId).orElseThrow( () -> new UserIdNotFoundException("Invalid User Id for Delete Operation"));
+		userInformationRepository.deleteById(userInformation.getUserId());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Successfully Deleted the User Deleted Based on UserId -> UserName : "+userInformation.getUserId());
 	}
 	
