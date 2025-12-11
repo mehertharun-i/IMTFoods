@@ -2,6 +2,8 @@ package com.IMTFoods.UserManagement.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +25,20 @@ public class FavouriteRestaurantController {
 	
 	@PostMapping("/addToFavourite/{userid}/{restaurantid}")
 	public ResponseEntity<FavouriteRestaurantResponseDto> addRestaurantToFavouriteList(@PathVariable("userid") long userInformationId, @PathVariable("restaurantid") long restaurantId, @RequestParam(name = "favourite") boolean favouriteStatus){
-		if(favouriteStatus == true) {
-			FavouriteRestaurantResponseDto RestaurantAddToFavourite = favouriteRestaurantService.addRestaurantToFavouriteList(userInformationId, restaurantId, favouriteStatus);
-			return ResponseEntity.status(HttpStatus.CREATED).body(RestaurantAddToFavourite);
-		}else {
-			favouriteRestaurantService.removeRestaurantFromFavouriteList(userInformationId, restaurantId, favouriteStatus);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		}
+		FavouriteRestaurantResponseDto RestaurantAddToFavourite = favouriteRestaurantService.addRestaurantToFavouriteList(userInformationId, restaurantId, favouriteStatus);
+		return ResponseEntity.status(HttpStatus.CREATED).body(RestaurantAddToFavourite);
+	}
+	
+	@DeleteMapping("/removeFromFavourite/{favouriteId}")
+	public ResponseEntity<Void> removeRestaurantFromFavouriteList(@PathVariable("favouriteId") long favouriteId){
+		favouriteRestaurantService.removeRestaurantFromFavouriteList(favouriteId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();		
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<FavouriteRestaurantResponseDto> getFavouriteRestaurantById(@PathVariable("id") long favouriteId){
+		FavouriteRestaurantResponseDto favouriteRestaurantResponseDto = favouriteRestaurantService.getFavouriteRestauratnById(favouriteId);
+		return ResponseEntity.status(HttpStatus.OK).body(favouriteRestaurantResponseDto);
 	}
 	
 }

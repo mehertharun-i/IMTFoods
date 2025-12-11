@@ -22,4 +22,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUserAddressIdNotFoundException(UserAddressIdNotFoundException exceptionMessage){
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
 	}
+	
+	@ExceptionHandler(FavouriteRestaurantIdNotFoundException.class)
+	public ResponseEntity<String> handleFavouriteRestaurantIdNotFoundException(FavouriteRestaurantIdNotFoundException exceptionMessage){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage.getMessage());
+	}
 }

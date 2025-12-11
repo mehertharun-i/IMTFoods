@@ -6,6 +6,8 @@ public interface FavouriteRestaurantService {
 
 	FavouriteRestaurantResponseDto addRestaurantToFavouriteList(long userInformationId, long restaurantId, boolean favourite);
 
-	void removeRestaurantFromFavouriteList(long userInformationId, long restaurantId, boolean favourite);
+	void removeRestaurantFromFavouriteList(long favouriteId);
+
+	FavouriteRestaurantResponseDto getFavouriteRestauratnById(long favouriteId);
 
 }
