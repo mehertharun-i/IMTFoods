@@ -1,5 +1,6 @@
 package com.IMTFoods.FoodOrderManagement.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,7 @@ import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 public interface FoodOrderRepository extends JpaRepository<FoodOrder, Long> {
 	
 	Optional<FoodOrder> findByTrackingId(long trackingId);
+	
+	Optional<List<FoodOrder>> findByUserId(long userId);
 
 }

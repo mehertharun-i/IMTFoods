@@ -16,6 +16,10 @@ public interface FoodOrderService {
 	void deleteOrderedFood(long orderedFoodId);
 
 	List<FoodOrderResponseDto> orderListOfFoods(List<FoodOrderRequestDto> foodOrderRequestDtoList) throws Exception;
-	
+
+	List<FoodOrderResponseDto> orderedHistory(long userId);
+
+	FoodOrderResponseDto reOrderFood(long orderedFoodId);
+		
 
 }
