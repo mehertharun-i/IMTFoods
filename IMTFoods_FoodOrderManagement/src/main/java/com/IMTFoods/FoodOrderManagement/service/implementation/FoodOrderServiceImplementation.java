@@ -19,6 +19,7 @@ import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
 import com.IMTFoods.FoodOrderManagement.dto.RestaurantAddressResponseDto;
 import com.IMTFoods.FoodOrderManagement.dto.UserAddressInformationResponseDto;
 import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException;
+import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodUserIdNotFoundException;
 import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
 import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
@@ -137,6 +138,27 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 				foodOrderResponseDtoList.add(orderFood);
 			}
 			return foodOrderResponseDtoList;
+		}
+
+		@Override
+		public List<FoodOrderResponseDto> orderedHistory(long userId) {
+			List<FoodOrder> foodOrder = foodOrderRepository.findByUserId(userId).orElseThrow( () -> new OrderedFoodUserIdNotFoundException("Invalid User Id"));
+			
+			
+			return null;
+//			
+//			List<FoodOrder> allFoodOrder = foodOrderRepository.findAll();
+//			FoodOrder lastOrderFood = allFoodOrder.getLast();
+//			FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(lastOrderFood);
+//			return foodOrderResponseDto;
+		}
+
+		@Override
+		public FoodOrderResponseDto reOrderFood(long orderedFoodId) {
+			
+			FoodOrder foodOrder = foodOrderRepository.findById(orderedFoodId).orElseThrow( () -> new OrderedFoodIdNotFoundException("Invalid Ordered Food Id"));
+			
+			return null;
 		}
 
 }

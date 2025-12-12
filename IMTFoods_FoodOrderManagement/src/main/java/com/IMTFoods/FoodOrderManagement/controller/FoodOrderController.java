@@ -56,4 +56,15 @@ public class FoodOrderController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
+	@PostMapping("/foodre-order/{id}")
+	public ResponseEntity<FoodOrderResponseDto> reOrderFood(@PathVariable("id") long orderedFoodId) {
+		FoodOrderResponseDto foodOrderResponseDto = foodOrderService.reOrderFood(orderedFoodId);
+		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
+	}
+	
+	@GetMapping("/lastorder/{id}")
+	public ResponseEntity<List<FoodOrderResponseDto>> orderedHistory(@PathVariable("id") long userId){
+		List<FoodOrderResponseDto> foodOrderResponseDto = foodOrderService.orderedHistory(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
+	}
 }

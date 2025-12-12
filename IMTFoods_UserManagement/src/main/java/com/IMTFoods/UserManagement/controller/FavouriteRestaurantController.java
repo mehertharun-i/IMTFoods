@@ -1,5 +1,7 @@
 package com.IMTFoods.UserManagement.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,6 +41,12 @@ public class FavouriteRestaurantController {
 	public ResponseEntity<FavouriteRestaurantResponseDto> getFavouriteRestaurantById(@PathVariable("id") long favouriteId){
 		FavouriteRestaurantResponseDto favouriteRestaurantResponseDto = favouriteRestaurantService.getFavouriteRestauratnById(favouriteId);
 		return ResponseEntity.status(HttpStatus.OK).body(favouriteRestaurantResponseDto);
+	}
+	
+	@GetMapping()
+	public ResponseEntity<List<FavouriteRestaurantResponseDto>> getAllFavouriteRestaurantList(){
+		List<FavouriteRestaurantResponseDto> allFavouriteRestaurantList = favouriteRestaurantService.getAllFavouriteRestaurantList();
+		return ResponseEntity.status(HttpStatus.OK).body(allFavouriteRestaurantList);
 	}
 	
 }

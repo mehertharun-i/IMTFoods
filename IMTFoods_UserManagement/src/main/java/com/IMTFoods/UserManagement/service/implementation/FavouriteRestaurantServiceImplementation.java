@@ -1,5 +1,8 @@
 package com.IMTFoods.UserManagement.service.implementation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.IMTFoods.UserManagement.builder.FavouriteRestaurantBuilder;
@@ -47,8 +50,23 @@ public class FavouriteRestaurantServiceImplementation implements FavouriteRestau
 	@Override
 	public FavouriteRestaurantResponseDto getFavouriteRestauratnById(long favouriteId) {
 		FavouriteRestaurant favouriteRestaurant = favouriteRestaurantRepository.findById(favouriteId).orElseThrow( () -> new FavouriteRestaurantIdNotFoundException("Invalid Favourite Restaurant Id"));
-		favouriteRestaurantResponseBuilder.buildFavouriteRestaurantResponseDtoFormFavouriteRestaurant(favouriteRestaurant);
-		return null;
+		FavouriteRestaurantResponseDto favouriteRestaurantResponseDto = favouriteRestaurantResponseBuilder.buildFavouriteRestaurantResponseDtoFormFavouriteRestaurant(favouriteRestaurant);
+		
+		return favouriteRestaurantResponseDto;
+	}
+
+	@Override
+	public List<FavouriteRestaurantResponseDto> getAllFavouriteRestaurantList() {
+		
+		List<FavouriteRestaurant> allFavouriteRestaurantList = favouriteRestaurantRepository.findAll();
+		List<FavouriteRestaurantResponseDto> favouriteRestaurantResponseDtoList = new ArrayList<>();
+		
+		for(FavouriteRestaurant favouriteRestaurant : allFavouriteRestaurantList) {
+			FavouriteRestaurantResponseDto favouriteRestaurantResponseDto = favouriteRestaurantResponseBuilder.buildFavouriteRestaurantResponseDtoFormFavouriteRestaurant(favouriteRestaurant);
+			favouriteRestaurantResponseDtoList.add(favouriteRestaurantResponseDto);
+		}
+		
+		return favouriteRestaurantResponseDtoList;
 	}
 	
 	
