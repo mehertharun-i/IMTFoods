@@ -2,6 +2,7 @@ package com.IMTFoods.FoodOrderManagement.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
@@ -56,15 +58,16 @@ public class FoodOrderController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
-	@PostMapping("/foodre-order/{id}")
+	@GetMapping("/orderhistory/{id}")
+	public ResponseEntity<Page<FoodOrderResponseDto>> orderedHistory(@PathVariable("id") long userId, @RequestParam("pageNum") int pageNumber, @RequestParam("PageSize") int pageSize){
+		Page<FoodOrderResponseDto> foodOrderResponseDto = foodOrderService.orderedHistory(userId, pageNumber, pageSize);
+		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
+	}
+
+	@PostMapping("/foodreorder/{id}")
 	public ResponseEntity<FoodOrderResponseDto> reOrderFood(@PathVariable("id") long orderedFoodId) {
 		FoodOrderResponseDto foodOrderResponseDto = foodOrderService.reOrderFood(orderedFoodId);
 		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
 	}
 	
-	@GetMapping("/lastorder/{id}")
-	public ResponseEntity<List<FoodOrderResponseDto>> orderedHistory(@PathVariable("id") long userId){
-		List<FoodOrderResponseDto> foodOrderResponseDto = foodOrderService.orderedHistory(userId);
-		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
-	}
 }
