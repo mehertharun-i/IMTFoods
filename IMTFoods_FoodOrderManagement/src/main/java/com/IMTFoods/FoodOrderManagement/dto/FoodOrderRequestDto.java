@@ -21,7 +21,7 @@ public class FoodOrderRequestDto {
 	
 	private long foodOrderRequestDtoRestaurantAddressId;
 	
-	private List<OrderItemsRequestDto> foodOrderRequestDtoorderItems;
+	private List<OrderItemsRequestDto> foodOrderRequestDtoOrderItems;
 	
 	private double foodOrderRequestDtoOrderTotalPrice;
 	

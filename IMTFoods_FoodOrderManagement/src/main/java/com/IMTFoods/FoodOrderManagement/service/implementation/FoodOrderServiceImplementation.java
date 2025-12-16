@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.IMTFoods.FoodOrderManagement.builder.DeliveryPartnerAssignmentBuilder;
 import com.IMTFoods.FoodOrderManagement.builder.FoodOrderBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderRequestDtoBuilder;
 import com.IMTFoods.FoodOrderManagement.builder.FoodOrderResponseDtoBuilder;
 import com.IMTFoods.FoodOrderManagement.dao.FoodOrderRepository;
 import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentRequestDto;
@@ -19,7 +25,6 @@ import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
 import com.IMTFoods.FoodOrderManagement.dto.RestaurantAddressResponseDto;
 import com.IMTFoods.FoodOrderManagement.dto.UserAddressInformationResponseDto;
 import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException;
-import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodUserIdNotFoundException;
 import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
 import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
@@ -141,24 +146,33 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 		}
 
 		@Override
-		public List<FoodOrderResponseDto> orderedHistory(long userId) {
-			List<FoodOrder> foodOrder = foodOrderRepository.findByUserId(userId).orElseThrow( () -> new OrderedFoodUserIdNotFoundException("Invalid User Id"));
+		public Page<FoodOrderResponseDto> orderedHistory(long userId, int pageNumber, int pageSize) {
 			
+			Sort sort = Sort.by(Direction.DESC, "orderId");
 			
-			return null;
-//			
-//			List<FoodOrder> allFoodOrder = foodOrderRepository.findAll();
-//			FoodOrder lastOrderFood = allFoodOrder.getLast();
-//			FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(lastOrderFood);
-//			return foodOrderResponseDto;
+			PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+			
+			Page<FoodOrder> foodOrderListByUserId = foodOrderRepository.findByUserId(userId, pageRequest);
+			List<FoodOrder> foodOrderList = foodOrderListByUserId.getContent();
+			List<FoodOrderResponseDto> foodOrderResponseDtoList = new ArrayList<>();
+			
+			for(FoodOrder foodOrder : foodOrderList) {
+				FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(foodOrder);
+				foodOrderResponseDtoList.add(foodOrderResponseDto);
+			}
+			
+			PageImpl<FoodOrderResponseDto> pageImpl = new PageImpl<FoodOrderResponseDto>(foodOrderResponseDtoList, pageRequest, foodOrderListByUserId.getTotalElements());
+			return pageImpl;
 		}
 
 		@Override
 		public FoodOrderResponseDto reOrderFood(long orderedFoodId) {
 			
 			FoodOrder foodOrder = foodOrderRepository.findById(orderedFoodId).orElseThrow( () -> new OrderedFoodIdNotFoundException("Invalid Ordered Food Id"));
-			
-			return null;
+			FoodOrderRequestDtoBuilder.buildFoodOrderRequestDtoFromFoodOrder(foodOrder);
+			FoodOrder reOrderingFood = foodOrderRepository.save(foodOrder);
+			FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(reOrderingFood);
+			return foodOrderResponseDto;
 		}
 
 }

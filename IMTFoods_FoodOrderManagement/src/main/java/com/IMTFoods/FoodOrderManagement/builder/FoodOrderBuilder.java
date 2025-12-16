@@ -32,9 +32,9 @@ public class FoodOrderBuilder {
 	
 	public FoodOrderBuilder(@Qualifier("restTemplate") RestTemplate restTemplate, @Qualifier("loadRestTemplate") RestTemplate loadRestTemplate, PaymentStatusRepository paymentStatusRepository, FoodOrderRepository foodOrderRepository) {
 		this.restTemplate = restTemplate;
+		this.loadRestTemplate = loadRestTemplate;
 		this.paymentStatusRepository = paymentStatusRepository;
 		this.foodOrderRepository = foodOrderRepository;
-		this.loadRestTemplate = loadRestTemplate;
 	}
 	
 	private static final int RANDOM_ID_DIVIDED_BY = 1000000;
@@ -44,7 +44,7 @@ public class FoodOrderBuilder {
 	
 	public FoodOrder buildFoodOrderFromFoodOrderRequestDto(FoodOrderRequestDto foodOrderRequestDto) {
 		
-		List<OrderItems> listOfOrderItems = buildListOfOrderItemFromOrderItemRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoorderItems());
+		List<OrderItems> listOfOrderItems = buildListOfOrderItemFromOrderItemRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoOrderItems());
 		DeliveryPartnerDetailsResponseDto getDeliveryPartnerId = fetchTheDeliveryPartnerWhoIsAvailable();
 		PaymentDetails paymentDetails = buildPaymentDetailsFromPaymentDetailsRequestDto(foodOrderRequestDto.getFoodOrderRequestDtoPaymentDetails());
 		

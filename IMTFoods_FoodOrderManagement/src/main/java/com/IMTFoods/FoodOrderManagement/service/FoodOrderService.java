@@ -2,6 +2,8 @@ package com.IMTFoods.FoodOrderManagement.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
 
@@ -17,7 +19,7 @@ public interface FoodOrderService {
 
 	List<FoodOrderResponseDto> orderListOfFoods(List<FoodOrderRequestDto> foodOrderRequestDtoList) throws Exception;
 
-	List<FoodOrderResponseDto> orderedHistory(long userId);
+	Page<FoodOrderResponseDto> orderedHistory(long userId, int pageNumber, int pageSize);
 
 	FoodOrderResponseDto reOrderFood(long orderedFoodId);
 		
