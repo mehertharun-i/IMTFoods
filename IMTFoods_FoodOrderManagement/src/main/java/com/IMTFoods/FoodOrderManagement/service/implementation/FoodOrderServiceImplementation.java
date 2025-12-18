@@ -39,16 +39,18 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 	private final FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder;
 	private final RestTemplate restTemplate;
 	private final RestTemplate loadRestTemplate;
+	private final FoodOrderRequestDtoBuilder foodOrderRequestDtoBuilder;
 	
 	public FoodOrderServiceImplementation(FoodOrderRepository foodOrderRepository, @Qualifier("restTemplate") RestTemplate restTemplate,
 			DeliveryPartnerAssignmentBuilder deliveryPartnerAssignmentBuilder, FoodOrderBuilder foodOrderBuilder,
-			FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder, @Qualifier("loadRestTemplate") RestTemplate loadRestTemplate) {
+			FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder, @Qualifier("loadRestTemplate") RestTemplate loadRestTemplate, FoodOrderRequestDtoBuilder foodOrderRequestDtoBuilder ) {
 		this.foodOrderRepository = foodOrderRepository;
 		this.restTemplate = restTemplate;
 		this.deliveryPartnerAssignmentBuilder = deliveryPartnerAssignmentBuilder;
 		this.foodOrderBuilder = foodOrderBuilder;
 		this.foodOrderResponseDtoBuilder = foodOrderResponseDtoBuilder;
 		this.loadRestTemplate = loadRestTemplate;
+		this.foodOrderRequestDtoBuilder = foodOrderRequestDtoBuilder;
 	}
 	
 	@Override
@@ -149,7 +151,6 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 		public Page<FoodOrderResponseDto> orderedHistory(long userId, int pageNumber, int pageSize) {
 			
 			Sort sort = Sort.by(Direction.DESC, "orderId");
-			
 			PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 			
 			Page<FoodOrder> foodOrderListByUserId = foodOrderRepository.findByUserId(userId, pageRequest);
@@ -166,13 +167,12 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 		}
 
 		@Override
-		public FoodOrderResponseDto reOrderFood(long orderedFoodId) {
+		public FoodOrderResponseDto reOrderFood(long orderedFoodId) throws Exception {
 			
 			FoodOrder foodOrder = foodOrderRepository.findById(orderedFoodId).orElseThrow( () -> new OrderedFoodIdNotFoundException("Invalid Ordered Food Id"));
-			FoodOrderRequestDtoBuilder.buildFoodOrderRequestDtoFromFoodOrder(foodOrder);
-			FoodOrder reOrderingFood = foodOrderRepository.save(foodOrder);
-			FoodOrderResponseDto foodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(reOrderingFood);
-			return foodOrderResponseDto;
+			FoodOrderRequestDto foodOrderRequestDto = foodOrderRequestDtoBuilder.buildFoodOrderRequestDtoFromFoodOrder(foodOrder);
+			FoodOrderResponseDto reOrderFood = orderFood(foodOrderRequestDto);
+			return reOrderFood;
 		}
 
 }
