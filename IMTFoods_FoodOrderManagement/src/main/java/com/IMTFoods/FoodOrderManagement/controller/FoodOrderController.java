@@ -65,7 +65,7 @@ public class FoodOrderController {
 	}
 
 	@PostMapping("/foodreorder/{id}")
-	public ResponseEntity<FoodOrderResponseDto> reOrderFood(@PathVariable("id") long orderedFoodId) {
+	public ResponseEntity<FoodOrderResponseDto> reOrderFood(@PathVariable("id") long orderedFoodId) throws Exception {
 		FoodOrderResponseDto foodOrderResponseDto = foodOrderService.reOrderFood(orderedFoodId);
 		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
 	}

@@ -21,7 +21,7 @@ public interface FoodOrderService {
 
 	Page<FoodOrderResponseDto> orderedHistory(long userId, int pageNumber, int pageSize);
 
-	FoodOrderResponseDto reOrderFood(long orderedFoodId);
+	FoodOrderResponseDto reOrderFood(long orderedFoodId) throws Exception;
 		
 
 }
