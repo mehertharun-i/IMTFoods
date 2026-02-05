@@ -1,8 +1,16 @@
 package com.IMTFoods.FoodOrderManagement.service.implementation;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.IMTFoods.FoodOrderManagement.builder.DeliveryPartnerAssignmentBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderRequestDtoBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderResponseDtoBuilder;
+import com.IMTFoods.FoodOrderManagement.dao.FoodOrderRepository;
+import com.IMTFoods.FoodOrderManagement.dto.*;
+import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException;
+import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
+import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
+import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
+import com.IMTFoods.FoodOrderManagement.utils.CurrentStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,22 +21,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.IMTFoods.FoodOrderManagement.builder.DeliveryPartnerAssignmentBuilder;
-import com.IMTFoods.FoodOrderManagement.builder.FoodOrderBuilder;
-import com.IMTFoods.FoodOrderManagement.builder.FoodOrderRequestDtoBuilder;
-import com.IMTFoods.FoodOrderManagement.builder.FoodOrderResponseDtoBuilder;
-import com.IMTFoods.FoodOrderManagement.dao.FoodOrderRepository;
-import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentRequestDto;
-import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
-import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.RestaurantAddressResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.UserAddressInformationResponseDto;
-import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException;
-import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
-import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
-import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
-import com.IMTFoods.FoodOrderManagement.utils.CurrentStatus;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FoodOrderServiceImplementation implements FoodOrderService {

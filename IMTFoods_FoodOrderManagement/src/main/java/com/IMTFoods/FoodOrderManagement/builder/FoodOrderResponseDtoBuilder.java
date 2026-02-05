@@ -1,24 +1,15 @@
 package com.IMTFoods.FoodOrderManagement.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.IMTFoods.FoodOrderManagement.dto.*;
+import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
+import com.IMTFoods.FoodOrderManagement.model.OrderItems;
+import com.IMTFoods.FoodOrderManagement.model.PaymentDetails;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerDetailsResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.OrderItemsResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.PaymentDetailsResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.RestaurantAddressResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.RestaurantDetailsResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.UserAddressInformationResponseDto;
-import com.IMTFoods.FoodOrderManagement.dto.UserInformationResponseDto;
-import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
-import com.IMTFoods.FoodOrderManagement.model.OrderItems;
-import com.IMTFoods.FoodOrderManagement.model.PaymentDetails;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class FoodOrderResponseDtoBuilder {

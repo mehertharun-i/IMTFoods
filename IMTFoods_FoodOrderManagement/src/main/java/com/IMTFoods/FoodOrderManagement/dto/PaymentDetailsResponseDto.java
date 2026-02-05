@@ -2,7 +2,6 @@ package com.IMTFoods.FoodOrderManagement.dto;
 
 import com.IMTFoods.FoodOrderManagement.utils.PaymentStatus;
 import com.IMTFoods.FoodOrderManagement.utils.PaymentType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

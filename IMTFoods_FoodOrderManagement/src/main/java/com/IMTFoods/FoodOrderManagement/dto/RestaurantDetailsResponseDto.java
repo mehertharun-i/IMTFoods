@@ -1,13 +1,12 @@
 package com.IMTFoods.FoodOrderManagement.dto;
 
-import java.util.List;
-
 import com.IMTFoods.FoodOrderManagement.utils.RestaurantType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor

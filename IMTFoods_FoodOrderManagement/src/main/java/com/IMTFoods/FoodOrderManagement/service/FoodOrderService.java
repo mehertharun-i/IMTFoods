@@ -1,11 +1,10 @@
 package com.IMTFoods.FoodOrderManagement.service;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface FoodOrderService {
 

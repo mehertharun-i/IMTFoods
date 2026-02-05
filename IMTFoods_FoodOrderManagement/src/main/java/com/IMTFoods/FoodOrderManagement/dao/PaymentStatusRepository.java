@@ -1,10 +1,9 @@
 package com.IMTFoods.FoodOrderManagement.dao;
 
-import java.util.Optional;
-
+import com.IMTFoods.FoodOrderManagement.model.PaymentDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.IMTFoods.FoodOrderManagement.model.PaymentDetails;
+import java.util.Optional;
 
 public interface PaymentStatusRepository extends JpaRepository<PaymentDetails, Long>{
 

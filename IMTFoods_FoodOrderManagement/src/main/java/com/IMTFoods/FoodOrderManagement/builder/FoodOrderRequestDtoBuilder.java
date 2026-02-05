@@ -1,10 +1,5 @@
 package com.IMTFoods.FoodOrderManagement.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
 import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.OrderItemsRequestDto;
 import com.IMTFoods.FoodOrderManagement.dto.PaymentDetailsRequestDto;
@@ -12,6 +7,10 @@ import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
 import com.IMTFoods.FoodOrderManagement.model.OrderItems;
 import com.IMTFoods.FoodOrderManagement.model.PaymentDetails;
 import com.IMTFoods.FoodOrderManagement.utils.PaymentType;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class FoodOrderRequestDtoBuilder {

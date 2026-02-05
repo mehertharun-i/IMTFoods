@@ -1,13 +1,12 @@
 package com.IMTFoods.FoodOrderManagement.dto;
 
-import java.time.Instant;
-
 import com.IMTFoods.FoodOrderManagement.utils.AssignmentStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
