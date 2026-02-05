@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderItemsResponseDto {
+public class UpdateOrderItemsRequestDto {
 	
 	private long orderItemId;
+
+	private long updateOrderItemRequestDtoRestaurantFoodItemsId;
 	
-	private String orderItemResponseDtoFoodItemName;
+	private double updateOrderItemsRequestDtoFoodItemPrice;
 	
-	private double orderItemResponseDtoFoodItemPrice;
-	
-	private double orderItemResponseDtoFoodQuantity;
+	private int updateOrderItemsRequestDtoQuantity;
 	
 }

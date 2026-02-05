@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class PaymentDetailsResponseDto {
+	
+	private long paymentDetailsResponseDtoPaymentDetailsId;
 
 	private long paymentDetailsResponseDtoPaymentTransactionId;
 	
