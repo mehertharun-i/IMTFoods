@@ -1,14 +1,24 @@
 package com.IMTFoods.FoodOrderManagement.controller;
 
-import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
-import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
-import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
+import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
+import com.IMTFoods.FoodOrderManagement.dto.UpdateFoodOrderRequestDto;
+import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -60,6 +70,12 @@ public class FoodOrderController {
 	public ResponseEntity<FoodOrderResponseDto> reOrderFood(@PathVariable("id") long orderedFoodId) throws Exception {
 		FoodOrderResponseDto foodOrderResponseDto = foodOrderService.reOrderFood(orderedFoodId);
 		return ResponseEntity.status(HttpStatus.OK).body(foodOrderResponseDto);
+	}
+	
+	@PutMapping("/updateorderedfood/{userid}")
+	public ResponseEntity<FoodOrderResponseDto> updateOrderFood(@PathVariable("userid") long userId, @RequestBody UpdateFoodOrderRequestDto updateFoodOrderRequestDto){
+		FoodOrderResponseDto updatedOrderFood = foodOrderService.updateOrderFood(updateFoodOrderRequestDto, userId);
+		return ResponseEntity.status(HttpStatus.OK).body(updatedOrderFood);
 	}
 	
 }

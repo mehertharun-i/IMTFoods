@@ -117,6 +117,7 @@ public class FoodOrderResponseDtoBuilder {
 	public static OrderItemsResponseDto buildOrderItemsResponseDtoFromOrderItems(OrderItems orderItems) {
 
 		OrderItemsResponseDto orderItemsResponseDto = OrderItemsResponseDto.builder()
+								.orderItemId(orderItems.getOrderItemId())
 								.orderItemResponseDtoFoodItemName(orderItems.getFoodItemName())
 								.orderItemResponseDtoFoodItemPrice(orderItems.getFoodItemPrice())
 								.orderItemResponseDtoFoodQuantity(orderItems.getFoodQuantity())
@@ -129,6 +130,7 @@ public class FoodOrderResponseDtoBuilder {
 			PaymentDetails paymentDetails) {
 		
 		PaymentDetailsResponseDto paymentDetailsResponseDto = PaymentDetailsResponseDto.builder()
+									.paymentDetailsResponseDtoPaymentDetailsId(paymentDetails.getPaymentDetailsId())
 									.paymentDetailsResponseDtoPaymentTransactionId(paymentDetails.getPaymentTransactionId())
 									.paymentDetailsResponseDtoOrderPaymentActualPrice(paymentDetails.getOrderPaymentActualPrice())
 									.paymentDetailsResponseDtoDiscountAmount(paymentDetails.getDiscountAmount())

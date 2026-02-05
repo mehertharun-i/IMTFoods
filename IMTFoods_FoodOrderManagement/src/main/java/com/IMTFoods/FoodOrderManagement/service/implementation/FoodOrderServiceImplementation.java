@@ -1,16 +1,8 @@
 package com.IMTFoods.FoodOrderManagement.service.implementation;
 
-import com.IMTFoods.FoodOrderManagement.builder.DeliveryPartnerAssignmentBuilder;
-import com.IMTFoods.FoodOrderManagement.builder.FoodOrderBuilder;
-import com.IMTFoods.FoodOrderManagement.builder.FoodOrderRequestDtoBuilder;
-import com.IMTFoods.FoodOrderManagement.builder.FoodOrderResponseDtoBuilder;
-import com.IMTFoods.FoodOrderManagement.dao.FoodOrderRepository;
-import com.IMTFoods.FoodOrderManagement.dto.*;
-import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException;
-import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
-import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
-import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
-import com.IMTFoods.FoodOrderManagement.utils.CurrentStatus;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,8 +13,24 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.IMTFoods.FoodOrderManagement.builder.DeliveryPartnerAssignmentBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderRequestDtoBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.FoodOrderResponseDtoBuilder;
+import com.IMTFoods.FoodOrderManagement.builder.UpdateFoodOrderBuilder;
+import com.IMTFoods.FoodOrderManagement.dao.FoodOrderRepository;
+import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentRequestDto;
+import com.IMTFoods.FoodOrderManagement.dto.DeliveryPartnerAssignmentResponseDto;
+import com.IMTFoods.FoodOrderManagement.dto.FoodOrderRequestDto;
+import com.IMTFoods.FoodOrderManagement.dto.FoodOrderResponseDto;
+import com.IMTFoods.FoodOrderManagement.dto.RestaurantAddressResponseDto;
+import com.IMTFoods.FoodOrderManagement.dto.UpdateFoodOrderRequestDto;
+import com.IMTFoods.FoodOrderManagement.dto.UserAddressInformationResponseDto;
+import com.IMTFoods.FoodOrderManagement.exception.OrderedFoodIdNotFoundException;
+import com.IMTFoods.FoodOrderManagement.exception.UserAddressAndRestaurantAddressAreNotCloserException;
+import com.IMTFoods.FoodOrderManagement.model.FoodOrder;
+import com.IMTFoods.FoodOrderManagement.service.FoodOrderService;
+import com.IMTFoods.FoodOrderManagement.utils.CurrentStatus;
 
 @Service
 public class FoodOrderServiceImplementation implements FoodOrderService {
@@ -34,10 +42,14 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 	private final RestTemplate restTemplate;
 	private final RestTemplate loadRestTemplate;
 	private final FoodOrderRequestDtoBuilder foodOrderRequestDtoBuilder;
+	private final UpdateFoodOrderBuilder updateFoodOrderBuilder;
 	
-	public FoodOrderServiceImplementation(FoodOrderRepository foodOrderRepository, @Qualifier("restTemplate") RestTemplate restTemplate,
+	public FoodOrderServiceImplementation(FoodOrderRepository foodOrderRepository,
+			@Qualifier("restTemplate") RestTemplate restTemplate,
 			DeliveryPartnerAssignmentBuilder deliveryPartnerAssignmentBuilder, FoodOrderBuilder foodOrderBuilder,
-			FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder, @Qualifier("loadRestTemplate") RestTemplate loadRestTemplate, FoodOrderRequestDtoBuilder foodOrderRequestDtoBuilder ) {
+			FoodOrderResponseDtoBuilder foodOrderResponseDtoBuilder,
+			@Qualifier("loadRestTemplate") RestTemplate loadRestTemplate,
+			FoodOrderRequestDtoBuilder foodOrderRequestDtoBuilder, UpdateFoodOrderBuilder updateFoodOrderBuilder) {
 		this.foodOrderRepository = foodOrderRepository;
 		this.restTemplate = restTemplate;
 		this.deliveryPartnerAssignmentBuilder = deliveryPartnerAssignmentBuilder;
@@ -45,6 +57,7 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 		this.foodOrderResponseDtoBuilder = foodOrderResponseDtoBuilder;
 		this.loadRestTemplate = loadRestTemplate;
 		this.foodOrderRequestDtoBuilder = foodOrderRequestDtoBuilder;
+		this.updateFoodOrderBuilder = updateFoodOrderBuilder;
 	}
 	
 	@Override
@@ -167,6 +180,16 @@ public class FoodOrderServiceImplementation implements FoodOrderService {
 			FoodOrderRequestDto foodOrderRequestDto = foodOrderRequestDtoBuilder.buildFoodOrderRequestDtoFromFoodOrder(foodOrder);
 			FoodOrderResponseDto reOrderFood = orderFood(foodOrderRequestDto);
 			return reOrderFood;
+		}
+
+		@Override
+		public FoodOrderResponseDto updateOrderFood(UpdateFoodOrderRequestDto updateFoodOrderRequestDto, long userId) {
+			
+			FoodOrder updatedFoodOrder = updateFoodOrderBuilder.buildFoodOrderFromUpdateFoodOrderRequestDto(updateFoodOrderRequestDto, userId);
+			FoodOrder updatedSavedFoodOrder = foodOrderRepository.save(updatedFoodOrder);
+			
+			FoodOrderResponseDto updatedFoodOrderResponseDto = foodOrderResponseDtoBuilder.buildFoodOrderResponseDtoFromFoodOrder(updatedSavedFoodOrder);
+			return updatedFoodOrderResponseDto;
 		}
 
 }

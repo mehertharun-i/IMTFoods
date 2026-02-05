@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+import com.IMTFoods.FoodOrderManagement.dto.UpdateFoodOrderRequestDto;
+
 public interface FoodOrderService {
 
 	FoodOrderResponseDto orderFood(FoodOrderRequestDto foodOrderRequestDto) throws Exception;
@@ -21,6 +23,8 @@ public interface FoodOrderService {
 	Page<FoodOrderResponseDto> orderedHistory(long userId, int pageNumber, int pageSize);
 
 	FoodOrderResponseDto reOrderFood(long orderedFoodId) throws Exception;
+
+	FoodOrderResponseDto updateOrderFood(UpdateFoodOrderRequestDto updateFoodOrderRequestDto, long userId);
 		
 
 }

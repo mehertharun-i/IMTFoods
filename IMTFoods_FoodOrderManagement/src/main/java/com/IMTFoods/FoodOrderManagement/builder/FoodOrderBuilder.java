@@ -138,12 +138,12 @@ public class FoodOrderBuilder {
 						.orderPaymentFinalPrice(paymentDetailsRequestDto.getPaymentDetailsRequestDtoOrderPaymentFinalPrice())
 						.paymentType(paymentDetailsRequestDto.getPaymentDetailsRequestDtoPaymentType())
 						.paymentStatus(paymentDetailsRequestDto.getPaymentDetailsRequestDtoPaymentType().equals(PaymentType.CASH_ON_DELIVERY)? PaymentStatus.PENDING: PaymentStatus.SUCCESSFUL)
-						.paymentTransactionId(transactionId != null ? transactionId : 0L)
+						.paymentTransactionId(transactionId != null ? transactionId : generateTransactionId())
 						.build();	
 		return paymentDetails;
 	}
 	
-	private long generateTransactionId() {
+	 long generateTransactionId() {
 
 		SecureRandom secureRandom = new SecureRandom();
 		
